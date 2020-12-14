@@ -47,7 +47,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 
 		//XVˆ—
 
-
+		DrawFormatString(0, 0, GetColor(255, 255, 255), "ˆê‚ÉŠæ’£‚Á‚Ä‚±[‚º");
 
 
 		//•`‰æˆ—
