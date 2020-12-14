@@ -47,7 +47,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 
 		//更新処理
 
-		DrawFormatString(0, 0, GetColor(255, 255, 255), "一緒に頑張ってこーぜ");
+		DrawFormatString(0, 0, GetColor(255, 255, 255), "一緒に頑張ってこーぜVer2");
 
 
 		//描画処理
