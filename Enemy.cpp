@@ -74,7 +74,7 @@ void Enemy::move(Player *player,BackGraoud *backgraoud) {
 	}
 }
 void Enemy::draw() {
-	DrawFormatString(0, 0, GetColor(0, 0, 0), "%d", isAlive);
+	//DrawFormatString(0, 0, GetColor(0, 0, 0), "%d", isAlive);
 	if (isAlive == 1) {
 		DrawBoxAA(
 			posX,

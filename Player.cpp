@@ -71,18 +71,6 @@ void Player::move(char keys[255], char oldkeys[255], int WIN_WIDTH) {
 	if (posY > 442) {
 		posY = 442;
 	}
-	if (keys[KEY_INPUT_RIGHT] == 1) {
-		posX += speed;
-	}
-	if (keys[KEY_INPUT_LEFT] == 1) {
-		posX -= speed;
-	}
-	if (keys[KEY_INPUT_UP] == 1) {
-		posY -= speed;
-	}
-	if (keys[KEY_INPUT_DOWN] == 1) {
-		posY += speed;
-	}
 	if (isAlive == 0) {
 		if (keys[KEY_INPUT_SPACE] == 1) {
 			readyR++;

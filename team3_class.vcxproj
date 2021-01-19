@@ -131,7 +131,9 @@
     <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="Foot.cpp" />
     <ClCompile Include="GameObject.cpp" />
+    <ClCompile Include="Goal.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Navi.cpp" />
     <ClCompile Include="Player.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -139,6 +141,8 @@
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="Foot.h" />
     <ClInclude Include="GameObject.h" />
+    <ClInclude Include="Goal.h" />
+    <ClInclude Include="Navi.h" />
     <ClInclude Include="Player.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -6,5 +6,4 @@ public:
 	float posY;
 	float radius;
 public:
-	void draw();
 };

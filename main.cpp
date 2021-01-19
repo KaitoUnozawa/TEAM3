@@ -4,6 +4,8 @@
 #include"GameObject.h"
 #include "Player.h"
 #include "Enemy.h"
+#include "Navi.h"
+#include "Goal.h"
 
 const char TITLE[] = "クラスでできました～";
 
@@ -11,7 +13,7 @@ const int WIN_WIDTH = 800; //ウィンドウ横幅
 const int WIN_HEIGHT = 450;//ウィンドウ縦幅
 
 int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPSTR lpCmdLine, _In_ int nCmdShow) {
-	ChangeWindowMode(TRUE);						//フルスクリーンモードに設定
+	ChangeWindowMode(1);						//フルスクリーンモードに設定
 	//ウィンドウサイズを手動では変更できず、かつウィンドウサイズに合わせて拡大できないようにする
 	SetWindowSizeChangeEnableFlag(FALSE, FALSE);
 	SetMainWindowText(TITLE);					// タイトルを変更
@@ -41,6 +43,8 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	for (int i = 0; i < ENEMY_MAX; i++) {
 		enemy[i] = new Enemy(8, 2, 1);
 	}
+	Navi* navi = new Navi();
+	Goal* goal = new Goal();
 	// ゲームループ
 	while (1) {
 		//最新のキーボード情報だったものは１フレーム前のキーボード情報として保存
@@ -56,7 +60,9 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 
 		//更新処理
 		player->update(keys, oldkeys, WIN_WIDTH);
-		backgraoud->update(player);
+		backgraoud->update(keys, oldkeys, player);
+		navi->update(WIN_HEIGHT, WIN_WIDTH, player,goal);
+		goal->update(WIN_WIDTH,WIN_HEIGHT,keys);
 		for (int i = 0; i < ENEMY_MAX; i++) {
 			enemy[i]->update(player,backgraoud, keys, oldkeys);
 		}
@@ -67,6 +73,8 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 		//描画処理
 		backgraoud->draw();
 		foot->draw();
+		navi->draw();
+		goal->draw();
 		player->draw();
 		for (int i = 0; i < ENEMY_MAX; i++) {
 			enemy[i]->draw();
