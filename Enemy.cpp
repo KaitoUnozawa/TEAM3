@@ -8,11 +8,12 @@
 
 
 Enemy::Enemy(float radius, float speed,int isAlive) {
-	this->posX = (float)GetRand(800);
-	this->posY = (float)GetRand(450);
+	posX = (float)GetRand(800);
+	posY = (float)GetRand(450);
 	this->radius = radius;
 	this->speed = speed;
 	this->isAlive = isAlive;
+	isFollow = 0;
 }
 
 Enemy::~Enemy() {
@@ -22,6 +23,7 @@ float Enemy::getPosX() { return posX; }
 float Enemy::getPosY() { return posY; }
 float Enemy::getRadius() { return radius; }
 float Enemy::getSpeed() { return speed; }
+int Enemy::getIsAlive() { return isAlive; }
 
 void Enemy::setPosX(float posX) { this->posX = posX; }
 void Enemy::setPosY(float posY) { this->posY = posY; }
@@ -42,6 +44,11 @@ void Enemy::collide(Player* player, char keys[255], char oldkeys[255]) {
 			if (distance < player->getAttackR() - radius) {
 				if (distance <= Radius) {
 					isAlive = 0;
+
+					player->hitPoint.push_back(1);
+					player->hitPointX.push_back(posX);
+					player->hitPointY.push_back(posY);
+
 				}
 			}
 		}
@@ -52,16 +59,8 @@ void Enemy::move(Player *player,BackGraoud *backgraoud) {
 			float aX2bX = (player->getPosX() - posX);
 			float aY2bY = (player->getPosY() - posY);
 			float aR2bR = (float)sqrt((aX2bX * aX2bX) + (aY2bY * aY2bY));
-			if (backgraoud->getMoveFlag() == 0) {
-				posX += aX2bX / aR2bR * speed;
-				posY += aY2bY / aR2bR * speed;
-			}
-			if (backgraoud->getMoveFlag() == 1) {
-				posX += aX2bX / aR2bR * speed;
-			}
-			if (backgraoud->getMoveFlag() == -1) {
-				posY += aY2bY / aR2bR * speed;
-			}
+			posX += (aX2bX / aR2bR * speed);
+			posY += (aY2bY / aR2bR * speed);
 			/*radianX = cos(angle);
 			radianY = sin(angle);
 			if (aX2bX * radianX + aY2bY * radianY < 0) {
@@ -74,14 +73,13 @@ void Enemy::move(Player *player,BackGraoud *backgraoud) {
 	}
 }
 void Enemy::draw() {
-	//DrawFormatString(0, 0, GetColor(0, 0, 0), "%d", isAlive);
 	if (isAlive == 1) {
 		DrawBoxAA(
-			posX,
-			posY,
-			posX + radius * 2,
-			posY + radius * 2,
-			GetColor(230, 92, 92),
-			TRUE);
+		posX-radius,
+		posY-radius,
+		posX + radius,
+		posY + radius,
+		GetColor(230, 92, 92),
+		TRUE);
 	}
 }

@@ -1,17 +1,19 @@
 #pragma once
 #include "Player.h"
+//#include "Easing.h"
 
 class BackGraoud {
 private:
 	int worldX, worldY;
-	int scrollX, scrollY;
-	//int posX;
-	//int posY;
-	//int moveX, moveY;
+	float scrollX, scrollY;
 	int startX, startY;
 	int moveFlag;
 public:
 	BackGraoud();
+	float getWorldX();
+	float getWorldY();
+	float getScrollX();
+	float getScrollY();
 	int getMoveFlag();
 	void update(char keys[255], char oldkeys[255], Player* player);
 	void move(char keys[255], char oldkeys[255], Player* player);

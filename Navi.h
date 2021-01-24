@@ -1,16 +1,11 @@
 #pragma once
 #include "Player.h"
-#include"GameObject.h"
+#include "GameObject.h"
 #include "Goal.h"
 class Navi :public GameObject {
 	int isAlive;
 public:
 	Navi();
-	float player2goalX;
-	float player2goalY;
-	float player2goalR;
-	float perX;
-	float perY;
 	int GrHandle;
 	float toGoalX;
 	float toGoalY;
@@ -24,4 +19,3 @@ public:
 	void visible(int WIN_HEIGHT, int WIN_WIDTH, Goal* goal);
 	void draw();
 };
-

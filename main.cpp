@@ -19,7 +19,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	SetMainWindowText(TITLE);					// タイトルを変更
 	SetGraphMode(WIN_WIDTH, WIN_HEIGHT, 32);	//画面サイズの最大サイズ、カラービット数を設定（モニターの解像度に合わせる）
 	SetWindowSizeExtendRate(1.0);				//画面サイズを設定（解像度との比率で設定）
-	SetBackgroundColor(0xf1, 0xf1, 0xf1);		// 画面の背景色を設定する
+	SetBackgroundColor(200, 200, 200);		// 画面の背景色を設定する
 
 	//Dxライブラリの初期化
 	if (DxLib_Init() == -1) { return -1; }
@@ -38,11 +38,13 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	Player* player = new Player(300, 300, 8, 4);
 	const int FOOT_MAX = 4;
 	Foot* foot = new Foot();
-	const int ENEMY_MAX = 3;
+
+	const int ENEMY_MAX = 10;
 	Enemy* enemy[ENEMY_MAX];
 	for (int i = 0; i < ENEMY_MAX; i++) {
 		enemy[i] = new Enemy(8, 2, 1);
 	}
+
 	Navi* navi = new Navi();
 	Goal* goal = new Goal();
 	// ゲームループ
@@ -53,22 +55,22 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 		}
 		//最新のキーボード情報を取得
 		GetHitKeyStateAll(keys);
-
 		//画面クリア
 		ClearDrawScreen();
 		//---------  ここからプログラムを記述  ----------//
 
+
 		//更新処理
-		player->update(keys, oldkeys, WIN_WIDTH);
+		player->update(backgraoud, keys, oldkeys, WIN_WIDTH);
 		backgraoud->update(keys, oldkeys, player);
 		navi->update(WIN_HEIGHT, WIN_WIDTH, player,goal);
-		goal->update(WIN_WIDTH,WIN_HEIGHT,keys);
+		goal->update(WIN_WIDTH,WIN_HEIGHT,backgraoud, player);
 		for (int i = 0; i < ENEMY_MAX; i++) {
 			enemy[i]->update(player,backgraoud, keys, oldkeys);
 		}
 		foot->visible();
 		if (foot->getIsVisible() == 0) {
-			foot->prepare(player);
+			foot->prepare(backgraoud);
 		}
 		//描画処理
 		backgraoud->draw();
@@ -92,6 +94,12 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 			break;
 		}
 	}
+
+	delete backgraoud;
+	delete player;
+	delete foot;
+	delete enemy;
+
 	//Dxライブラリ終了処理
 	DxLib_End();
 	return 0;

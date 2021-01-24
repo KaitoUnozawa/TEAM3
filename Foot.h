@@ -1,6 +1,6 @@
 #pragma once
 #include"GameObject.h"
-#include "Player.h"
+#include "BackGraoud.h"
 
 class Foot {
 private:
@@ -9,7 +9,7 @@ private:
 public:
 	Foot();
 	int getIsVisible();
-	void prepare(Player* player);
+	void prepare(BackGraoud* backgraoud);
 	void visible();
 	void draw();
 };
