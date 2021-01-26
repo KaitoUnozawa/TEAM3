@@ -8,6 +8,8 @@
 
 
 Enemy::Enemy(float radius, float speed,int isAlive) {
+	initX = (float)GetRand(800);
+	initY = (float)GetRand(450);
 	posX = (float)GetRand(800);
 	posY = (float)GetRand(450);
 	this->radius = radius;
@@ -44,7 +46,6 @@ void Enemy::collide(Player* player, char keys[255], char oldkeys[255]) {
 			if (distance < player->getAttackR() - radius) {
 				if (distance <= Radius) {
 					isAlive = 0;
-
 					player->hitPoint.push_back(1);
 					player->hitPointX.push_back(posX);
 					player->hitPointY.push_back(posY);
@@ -72,13 +73,13 @@ void Enemy::move(Player *player,BackGraoud *backgraoud) {
 			}*/
 	}
 }
-void Enemy::draw() {
+void Enemy::draw(BackGraoud* backgraoud) {
 	if (isAlive == 1) {
 		DrawBoxAA(
-		posX-radius,
-		posY-radius,
-		posX + radius,
-		posY + radius,
+		(posX-radius),
+		(posY-radius),
+		(posX + radius),
+		(posY + radius),
 		GetColor(230, 92, 92),
 		TRUE);
 	}

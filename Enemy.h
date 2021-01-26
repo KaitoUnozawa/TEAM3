@@ -30,5 +30,5 @@ public:
 	void move(Player* player, BackGraoud* backgraoud);
 	void collide(Player* player, char keys[255], char oldkeys[255]);
 
-	void draw();
+	void draw(BackGraoud* backgraoud);
 };

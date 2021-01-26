@@ -4,7 +4,7 @@
 
 class BackGraoud {
 private:
-	int worldX, worldY;
+	float worldX, worldY;
 	float scrollX, scrollY;
 	int startX, startY;
 	int moveFlag;

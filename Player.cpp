@@ -63,17 +63,17 @@ void  Player::create() {
 	}
 }
 void Player::move(char keys[255], char oldkeys[255], int WIN_WIDTH) {
-	if (posX < 8) {
-		posX = 8;
+	if (posX < radius) {
+		posX = radius;
 	}
-	if (posX > 792) {
-		posX = 792;
+	if (posX  > 800 - radius) {
+		posX = 800 - radius;
 	}
-	if (posY < 8) {
-		posY = 8;
+	if (posY < radius) {
+		posY = radius;
 	}
-	if (posY > 442) {
-		posY = 442;
+	if (posY > 500- radius) {
+		posY = 500- radius;
 	}
 	if (keys[KEY_INPUT_RIGHT] == 1) {
 		//posX += speed;
