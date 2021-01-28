@@ -1,13 +1,14 @@
-#include <DxLib.h>
+#include "DxLib.h"
 #include "Enemy.h"
 #include "Player.h"
 #include"GameObject.h"
-#include "math.h"
-#include "BackGraoud.h"
+#include <math.h>
+#include "Background.h"
+#include "Shake.h"
 
 
 
-Enemy::Enemy(float radius, float speed,int isAlive) {
+Enemy::Enemy(float radius, float speed, int isAlive) {
 	initX = (float)GetRand(800);
 	initY = (float)GetRand(450);
 	posX = (float)GetRand(800);
@@ -16,6 +17,11 @@ Enemy::Enemy(float radius, float speed,int isAlive) {
 	this->speed = speed;
 	this->isAlive = isAlive;
 	isFollow = 0;
+	isRespawn = GetRand(4);
+	count = 0;
+	itX = hitPointX.begin();
+	itY = hitPointY.begin();
+	push = 0;
 }
 
 Enemy::~Enemy() {
@@ -26,61 +32,145 @@ float Enemy::getPosY() { return posY; }
 float Enemy::getRadius() { return radius; }
 float Enemy::getSpeed() { return speed; }
 int Enemy::getIsAlive() { return isAlive; }
+int Enemy::getHitPointSize() { return hitPoint.size(); }
+float Enemy::getHitPointX() { return hpXBuf; }
+float Enemy::getHitPointY() { return hpYBuf; }
+
 
 void Enemy::setPosX(float posX) { this->posX = posX; }
 void Enemy::setPosY(float posY) { this->posY = posY; }
 void Enemy::setRadius(float radius) { this->radius = radius; }
 void Enemy::setSpeed(float speed) { this->speed = speed; }
 void Enemy::setIsAlive(int isAlive) { this->isAlive = isAlive; }
+//void Enemy::setHitPoint() { hitPoint; }
+void Enemy::setHitPointX(int hitPointX) { this->hpXBuf = hitPointX; }
+void Enemy::setHitPointY(int hitPointY) { this->hpYBuf = hitPointY; }
 
-void Enemy::update(Player* player, BackGraoud* backgraoud, char keys[255], char oldkeys[255]) {
-	move(player, backgraoud);
-	collide(player,keys,oldkeys);
+void Enemy::addHitPoint(int index) {
+	hitPoint.push_back(1);
+	hitPointX.push_back(posX);
+	hitPointY.push_back(posY);
+	/*hitPoint++;
+	hitPointX[index] = posX;
+	hitPointY[index] = posY;*/
 }
-void Enemy::collide(Player* player, char keys[255], char oldkeys[255]) {
-		float a = posX - player->getAttackX();
-		float b = posY - player->getAttackY();
-		float distance = sqrtf(a * a + b * b);
-		float Radius = radius + player->getAttackR();
-		if (keys[KEY_INPUT_SPACE] == 0 && oldkeys[KEY_INPUT_SPACE] == 1) {
-			if (distance < player->getAttackR() - radius) {
-				if (distance <= Radius) {
-					isAlive = 0;
-					player->hitPoint.push_back(1);
-					player->hitPointX.push_back(posX);
-					player->hitPointY.push_back(posY);
 
+void Enemy::subHitPoint(int index) {
+	hitPoint.pop_back();
+	hitPointX.pop_back();
+	hitPointY.pop_back();
+	/*hitPoint--;
+	hitPointX[index] = 0;
+	hitPointY[index] = 0;*/
+}
+
+void Enemy::arrayToObject(int index) {
+	/**itX + index;
+	*itY + index;
+
+	hpXBuf = *itX;
+	hpYBuf = *itY;
+
+	itX = hitPointX.begin();
+	itY = hitPointY.begin();*/
+
+	hpXBuf = hitPointX[index];
+	hpYBuf = hitPointY[index];
+}
+
+void Enemy::ObjectToArray(int index) {
+	/*itX + index;
+	itY + index;
+
+	*itX = hpXBuf;
+	*itX = hpYBuf;
+
+	itX = hitPointX.begin();
+	itY = hitPointY.begin();*/
+
+	hitPointX[index] = hpXBuf;
+	hitPointY[index] = hpYBuf;
+}
+
+void Enemy::update(Enemy* enemy, Player* player, Shake* shake, Background* Background, char keys[255], char oldkeys[255]) {
+	move(player, Background);
+	collide(enemy, player, shake, keys, oldkeys);
+	respawn(Background);
+}
+void Enemy::collide(Enemy* enemy, Player* player, Shake* shake, char keys[255], char oldkeys[255]) {
+	float a = posX - player->getAttackX();
+	float b = posY - player->getAttackY();
+	float distance = sqrtf(a * a + b * b);
+	float Radius = radius + player->getAttackR();
+	if (player->getIsAlive() == 1 && push == 0) {
+		if (keys[KEY_INPUT_SPACE] == 0 && oldkeys[KEY_INPUT_SPACE] == 1) {
+			push = 1;
+			if (player->getAttackR() < 40) {
+				shake->setIntensify(10);
+			} else if (player->getAttackR() < 70) {
+				shake->setIntensify(20);
+			} else {
+				shake->setIntensify(30);
+			}
+			if (distance < player->getAttackR() - radius) {
+				if (distance <= Radius && isAlive == 1) {
+					isAlive = 0;
+					/*for (int i = 0; i < 50; i++) {
+						if (hitPointX[i] != 0) {
+							enemy->addHitPoint(i);
+							break;
+						}
+					}*/
+					enemy->addHitPoint(0);
 				}
 			}
 		}
-	
-}
-void Enemy::move(Player *player,BackGraoud *backgraoud) {
-		if (isAlive == 1) {
-			float aX2bX = (player->getPosX() - posX);
-			float aY2bY = (player->getPosY() - posY);
-			float aR2bR = (float)sqrt((aX2bX * aX2bX) + (aY2bY * aY2bY));
-			posX += (aX2bX / aR2bR * speed);
-			posY += (aY2bY / aR2bR * speed);
-			/*radianX = cos(angle);
-			radianY = sin(angle);
-			if (aX2bX * radianX + aY2bY * radianY < 0) {
-				angle = angle + (PI / 90);
-			} else if (aX2bX * radianX + aY2bY * radianY < 45) {
-				angle = angle;
-			} else {
-				angle = angle - (PI / 90);
-			}*/
+	}
+	if (player->getAttackR() <= 0) {
+		push = 0;
 	}
 }
-void Enemy::draw(BackGraoud* backgraoud) {
+void Enemy::move(Player* player, Background* Background) {
+	if (isAlive == 1) {
+		float aX2bX = (player->getPosX() - posX);
+		float aY2bY = (player->getPosY() - posY);
+		float aR2bR = (float)sqrt((aX2bX * aX2bX) + (aY2bY * aY2bY));
+		posX += (aX2bX / aR2bR * speed);
+		posY += (aY2bY / aR2bR * speed);
+	}
+}
+void Enemy::draw(Shake* shake) {
 	if (isAlive == 1) {
 		DrawBoxAA(
-		(posX-radius),
-		(posY-radius),
-		(posX + radius),
-		(posY + radius),
-		GetColor(230, 92, 92),
-		TRUE);
+			posX - radius + shake->getShakeX(),
+			posY - radius + shake->getShakeY(),
+			posX + radius + shake->getShakeX(),
+			posY + radius + shake->getShakeY(),
+			GetColor(230, 92, 92),
+			TRUE);
 	}
 }
+
+void Enemy::respawn(Background* Background) {
+	if (isAlive == 0) {
+		count++;
+		if (count == 30) {
+			if (isRespawn == 0) {
+				posX = -Background->getScrollX() + 830;
+				posY = -Background->getScrollY() + 480;
+			} else if (isRespawn == 1) {
+				posX = -Background->getScrollX() + 1570;
+				posY = -Background->getScrollY() + 480;
+			} else if (isRespawn == 2) {
+				posX = -Background->getScrollX() + 830;
+				posY = -Background->getScrollY() + 870;
+			} else {
+				posX = -Background->getScrollX() + 1570;
+				posY = -Background->getScrollY() + 870;
+			}
+			isAlive = 1;
+			count = 0;
+		}
+	}
+}
+

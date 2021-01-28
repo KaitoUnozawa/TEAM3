@@ -1,25 +1,25 @@
 #pragma once
-#include <vector>
 #include"GameObject.h"
 
 class Enemy;
-class BackGraoud;
-
-using namespace std;
+class Background;
+class Shake;
+class Easing;
 
 class Player :public GameObject {
 private:
 	float speed;
 	float attackX, attackY, readyR, attackR;
+	float effectX;
+	float effectY;
+	float effectR;
+	float priPos;
+	int pal;
 	int isAlive, isAttack, isMove;
 	int hpSize;
+	int frameMax;
 public:
-	// 配列のアクセッサの取り方が分からなかったので仕方なくです。禁忌かもですがゆるせ
-	vector<int> hitPoint;
-	vector<float> hitPointX;
-	vector<float> hitPointY;
-
-	Player(float posX, float posY, float radius, float speed);
+	Player(float radius, float speed);
 	~Player();
 
 	float getPosX();
@@ -39,11 +39,13 @@ public:
 	void setSpeed(float speed);
 	void setIsAttack(int isAttack);
 
-	void update(BackGraoud* backgraoud, char keys[255], char oldkeys[255], int WIN_WIDTH);
+	void update(Enemy* enemy, Background* background, Easing* easing, char keys[255], char oldkeys[255], int WIN_WIDTH);
 	void move(char keys[255], char oldkeys[255], int WIN_WIDTH);
 	void create();
-	void enclose();
-	void hitPointMove(BackGraoud* backgraoud);
-	void draw();
+	void enclose(Easing* easing);
+	void hitPointMove(Enemy* enemy, Background* background);
+	void draw(Enemy* enemy, Shake* shake);
+	void drawEffect();
+
 };
 

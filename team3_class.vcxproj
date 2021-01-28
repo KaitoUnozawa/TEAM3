@@ -127,23 +127,31 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="BackGraoud.cpp" />
+    <ClCompile Include="Background.cpp" />
+    <ClCompile Include="Easing.cpp" />
     <ClCompile Include="Enemy.cpp" />
-    <ClCompile Include="Foot.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="Goal.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Navi.cpp" />
+    <ClCompile Include="Opening.cpp" />
+    <ClCompile Include="Particle.cpp" />
     <ClCompile Include="Player.cpp" />
+    <ClCompile Include="RainbowEngine.cpp" />
+    <ClCompile Include="Shake.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="BackGraoud.h" />
+    <ClInclude Include="Background.h" />
+    <ClInclude Include="Easing.h" />
     <ClInclude Include="Enemy.h" />
-    <ClInclude Include="Foot.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="Goal.h" />
     <ClInclude Include="Navi.h" />
+    <ClInclude Include="Opening.h" />
+    <ClInclude Include="Particle.h" />
     <ClInclude Include="Player.h" />
+    <ClInclude Include="RainbowEngine.h" />
+    <ClInclude Include="Shake.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

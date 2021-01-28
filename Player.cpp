@@ -1,18 +1,20 @@
-#include "Player.h"
-#include <DxLib.h>
-#include "GameObject.h"
-#include "Enemy.h"
 #include <cstdlib>
+#include "DxLib.h"
+#include "GameObject.h"
+#include "Player.h"
+#include "Enemy.h"
+#include "Shake.h"
 
-Player::Player(float posX, float posY, float radius, float speed) {
-	this->posX = posX;
-	this->posY = posY;
+Player::Player(float radius, float speed) {
+	this->posX = 0;
+	this->posY = 0;
 	this->radius = radius;
 	this->speed = speed;
 	attackX = 0, attackY = 0, readyR = 0, attackR = 0;
 	isAlive = 0;
 	isAttack = 0;
 	isMove = 0;
+	hpSize = 0;
 }
 
 Player::~Player() {
@@ -26,6 +28,7 @@ float Player::getAttackX() {return  attackX;}
 float Player::getAttackY() {return attackY;}
 float Player::getAttackR() {return attackR;}
 int Player::getIsAttack() {return isAttack;}
+int Player::getIsAlive() { return isAlive; }
 int Player::getIsMove() { return isMove; }
 
 void Player::setPosX(float posX) { this->posX = posX; }
@@ -35,22 +38,29 @@ void Player::setSpeed(float speed) { this->speed = speed; }
 void Player::setIsAttack(int isAttack) { this->isAttack = isAttack; }
 
 
-void Player::update(BackGraoud* backgraoud, char keys[255], char oldkeys[255], int WIN_WIDTH) {
+void Player::update(Enemy* enemy, Background* background, Easing* easing, char keys[255], char oldkeys[255], int WIN_WIDTH) {
 	move(keys, oldkeys, WIN_WIDTH);
 	create();
-	enclose();
-	hitPointMove(backgraoud);
+	enclose(easing);
+	hitPointMove(enemy, background);
 }
-void Player::enclose() {
+void Player::enclose(Easing* easing) {
+	static int frame = 0;
+
 	if (isAlive == 1) {
 		if (attackR > 0) {
-			attackR--;
-		}else{
+			frame++;
+			attackR -= easing->easeInBack(frame, frameMax);
+			effectR = priPos + 200 * easing->easeOutQuint(frame, 50);
+			pal -= 15;
+		} else {
 			attackX = -50;
 			attackY = posY;
 			isAlive = 0;
+			frame = 0;
 		}
 	}
+
 }
 void  Player::create() {
 	if (isAttack == 1) {
@@ -59,7 +69,14 @@ void  Player::create() {
 		attackR = readyR;
 		readyR = radius - 1;
 		isAlive = 1;
+		frameMax = attackR;
+		effectX = posX;
+		effectY = posY;
+		effectR = attackR;
+		priPos = attackR;
+		pal = 255;
 		isAttack = 0;
+
 	}
 }
 void Player::move(char keys[255], char oldkeys[255], int WIN_WIDTH) {
@@ -75,26 +92,12 @@ void Player::move(char keys[255], char oldkeys[255], int WIN_WIDTH) {
 	if (posY > 500- radius) {
 		posY = 500- radius;
 	}
-	if (keys[KEY_INPUT_RIGHT] == 1) {
-		//posX += speed;
+	if (keys[KEY_INPUT_RIGHT] == 1 ||
+		keys[KEY_INPUT_LEFT] == 1 ||
+		keys[KEY_INPUT_UP] == 1 ||
+		keys[KEY_INPUT_DOWN] == 1) {
 		isMove = 1;
-	}
-	if (keys[KEY_INPUT_LEFT] == 1) {
-		//posX -= speed;
-		isMove = 1;
-	}
-	if (keys[KEY_INPUT_UP] == 1) {
-		//posY -= speed;
-		isMove = 1;
-	}
-	if (keys[KEY_INPUT_DOWN] == 1) {
-		//posY += speed;
-		isMove = 1;
-	}
-	if (keys[KEY_INPUT_RIGHT] == 0 &&
-		keys[KEY_INPUT_LEFT] == 0 &&
-		keys[KEY_INPUT_UP] == 0 &&
-		keys[KEY_INPUT_DOWN] == 0) {
+	} else {
 		isMove = 0;
 	}
 
@@ -103,66 +106,114 @@ void Player::move(char keys[255], char oldkeys[255], int WIN_WIDTH) {
 			readyR++;
 		}
 		if (keys[KEY_INPUT_SPACE] == 0 && oldkeys[KEY_INPUT_SPACE] == 1) {
-			isAttack = 1;
+			if (isAttack != 1) {
+				isAttack = 1;
+			}
 		}
 	}
 }
-void Player::hitPointMove(BackGraoud* backgraoud) {
-	int size = hitPoint.size();
+void Player::hitPointMove(Enemy* enemy, Background* background) {
+	int size = enemy->getHitPointSize();
 	float aX2bX;
 	float aY2bY;
+	float hitPointX;
+	float hitPointY;
+	float previousHitPointX;
+	float previousHitPointY;
 
 	for (int i = 0; i < size; i++) {
-		// 1つ手前のオブジェクトを追従するようにしています
+		enemy->arrayToObject(i);
+
+		hitPointX = enemy->getHitPointX();
+		hitPointY = enemy->getHitPointY();
+
 		if (i == 0) {
-			aX2bX = hitPointX[i] - posX;
-			aY2bY = hitPointY[i] - posY;
+			aX2bX = hitPointX - posX;
+			aY2bY = hitPointY - posY;
 		} else {
-			aX2bX = hitPointX[i] - hitPointX[i - 1];
-			aY2bY = hitPointY[i] - hitPointY[i - 1];
+			aX2bX = hitPointX - previousHitPointX;
+			aY2bY = hitPointY - previousHitPointY;
 		}
 
 		float aR2bR = (float)sqrt(abs(aX2bX * aX2bX) + abs(aY2bY * aY2bY));
 
-		// 敵の時は+でいけたのに何故か-じゃないと上手くいきません。なんで？？？
-		if (backgraoud->getMoveFlag() == 0 && aR2bR > i + 1 * 30) {
-			hitPointX[i] -= aX2bX / aR2bR * speed;
-			hitPointY[i] -= aY2bY / aR2bR * speed;
+		if (background->getMoveFlag() == 0 && aR2bR > i + 1 * 30) {
+			hitPointX -= aX2bX / aR2bR * speed;
+			hitPointY -= aY2bY / aR2bR * speed;
 		}
-		if (backgraoud->getMoveFlag() == 1 && aR2bR > i + 1 * 30) {
-			hitPointX[i] -= aX2bX / aR2bR * speed;
+		if (background->getMoveFlag() == 1 && aR2bR > i + 1 * 30) {
+			hitPointX -= aX2bX / aR2bR * speed;
 		}
-		if (backgraoud->getMoveFlag() == -1 && aR2bR > i + 1 * 30) {
-			hitPointY[i] -= aY2bY / aR2bR * speed;
+		if (background->getMoveFlag() == -1 && aR2bR > i + 1 * 30) {
+			hitPointY -= aY2bY / aR2bR * speed;
 		}
+
+		enemy->setHitPointX(hitPointX);
+		enemy->setHitPointY(hitPointY);
+		enemy->ObjectToArray(i);
+
+		previousHitPointX = hitPointX;
+		previousHitPointY = hitPointY;
 	}
 }
-
-void Player::draw() {
-	//DrawFormatString(0,0,GetColor(0,0,0),"%lf", attackX);
-	if (isAlive == 0) {
-		DrawCircleAA(posX, posY, readyR, 64, GetColor(230, 138, 230), 0, 1);
-	}if (isAlive == 1) {
-		DrawCircleAA(attackX, attackY, attackR, 64, GetColor(230, 92, 230), 1, 1);
+void Player::draw(Enemy* enemy, Shake* shake) {
+	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 200);
+	if (isAlive == 0 || isAlive == 1) {
+		DrawCircleAA(
+			posX + shake->getShakeX(),
+			posY + shake->getShakeY(),
+			readyR,
+			64,
+			GetColor(100, 100, 100), 0, 1);
 	}
+	if (isAlive == 1) {
+		DrawCircleAA(
+			attackX + shake->getShakeX(),
+			attackY + shake->getShakeY(),
+			attackR,
+			64,
+			GetColor(100, 100, 100), 1, 1);
+	}
+
+	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 100);
+
 	DrawBoxAA(
-		posX - radius,
-		posY - radius,
-		posX + radius,
-		posY + radius,
+		posX - radius + shake->getShakeX(),
+		posY - radius + shake->getShakeY(),
+		posX + radius + shake->getShakeX(),
+		posY + radius + shake->getShakeY(),
 		GetColor(92, 92, 230),
 		TRUE);
 
 	// HP
-	int size = hitPoint.size();
+	int size = enemy->getHitPointSize();
+	float hitPointX;
+	float hitPointY;
 
 	for (int i = 0; i < size; i++) {
+		enemy->arrayToObject(i);
+		hitPointX = enemy->getHitPointX();
+		hitPointY = enemy->getHitPointY();
+
 		DrawBoxAA(
-			hitPointX[i] - radius,
-			hitPointY[i] - radius,
-			hitPointX[i] + radius,
-			hitPointY[i] + radius,
+			hitPointX - radius + shake->getShakeX(),
+			hitPointY - radius + shake->getShakeY(),
+			hitPointX + radius + shake->getShakeX(),
+			hitPointY + radius + shake->getShakeY(),
 			GetColor(92, 92, 230),
 			TRUE);
+	}
+}
+void Player::drawEffect() {
+	if (isAlive == 1) {
+		SetDrawBlendMode(DX_BLENDMODE_ALPHA, pal);
+		DrawCircle(
+			effectX,
+			effectY,
+			effectR,
+			GetColor(100, 100, 100), 0, 1);
+		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, pal);
+
+		DrawFormatString(0, 0, GetColor(0, 0, 0), "%d", posX);
 	}
 }

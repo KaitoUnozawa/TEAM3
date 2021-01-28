@@ -2,8 +2,10 @@
 #include "Player.h"
 #include "GameObject.h"
 #include "Goal.h"
+#include "Background.h"
+
 class Navi :public GameObject {
-	int isAlive;
+	int isVisible;
 public:
 	Navi();
 	int GrHandle;
@@ -14,8 +16,8 @@ public:
 	float radianY;
 	float PI;
 	float angle;
-	void update(int WIN_HEIGHT, int WIN_WIDTH, Player* player, Goal* goal);
-	void indicate(int WIN_HEIGHT, int WIN_WIDTH, Player* player, Goal* goal);
-	void visible(int WIN_HEIGHT, int WIN_WIDTH, Goal* goal);
+	void update(float WIN_HEIGHT, float WIN_WIDTH, Player* player, Goal* goal, Background* background);
+	void indicate(float WIN_HEIGHT, float WIN_WIDTH, Player* player, Goal* goal, Background* background);
+	void visible(float WIN_HEIGHT, float WIN_WIDTH, Goal* goal);
 	void draw();
 };
