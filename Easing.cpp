@@ -2,7 +2,6 @@
 #include <cmath>
 
 Easing::Easing() {
-	priPos = 0;
 	start = 0;
 	end = 50;
 	movPix = 100;
@@ -77,7 +76,14 @@ float Easing::easeInExpo(float frame, float maxFrame) {
 	float x;
 	x = frame / maxFrame;
 
-	return x = 0 ? 0 : pow(2, 10 * x - 10);
+	return x == 0 ? 0 : pow(2, 10 * x - 10);
+}
+
+float Easing::easeOutExpo(float frame, float maxFrame) {
+	float x;
+	x = frame / maxFrame;
+
+	return x == 1 ? 1 : 1 - pow(2, -10 * x);
 }
 
 float Easing::easeOutBack(float start, float end) {

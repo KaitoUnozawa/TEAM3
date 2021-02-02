@@ -21,13 +21,11 @@ Background::Background() {
 	count = 0;
 	alpha = 100;
 	angle = 0;
-	posX = 0;
-	posY = 0;
 }
-void Background::update(char keys[255], char oldkeys[255], XINPUT_STATE* input, Player* player, Easing* easing) {
-	Background::move(keys, oldkeys, input, player, easing);
+void Background::update(char keys[255], char oldkeys[255], Player* player, Easing* easing) {
+	Background::move(keys, oldkeys, player, easing);
 }
-void Background::move(char keys[255], char oldkeys[255], XINPUT_STATE* input, Player* player, Easing* easing) {
+void Background::move(char keys[255], char oldkeys[255], Player* player, Easing* easing) {
 	player->setPosX(worldX - scrollX);
 	player->setPosY(worldY - scrollY);
 	if (keys[KEY_INPUT_UP] == 1) {
@@ -76,9 +74,9 @@ void Background::move(char keys[255], char oldkeys[255], XINPUT_STATE* input, Pl
 	}
 }
 
-void Background::draw(Shake* shake) {
-	DrawFormatString(0,90,GetColor(0,0,0),"%d", moveFlag);
-	alpha = (int)(sin(count / 30.0)*30+100.0);
+void Background::draw(Shake* shake, Color* color) {
+
+	alpha = (int)(sin(count / 30.0) * 30 + 100.0);
 	count++;
 	if (count > 180) {
 		count = 0;
@@ -88,8 +86,8 @@ void Background::draw(Shake* shake) {
 	// îwåi
 	SetDrawBlendMode(DX_BLENDMODE_ADD, 50);
 	// èc
-	for (int i = 0; i < 240; i++) {
-		DrawLineAA(
+	for (int i = 0; i < 75; i++) {
+		DrawLine(
 			-scrollX + (i * 32) + shake->getShakeX(),
 			0 + shake->getShakeY(),
 			-scrollX + (i * 32) + shake->getShakeX(),
@@ -97,14 +95,15 @@ void Background::draw(Shake* shake) {
 			BLACK);
 	}
 	// â°
-	for (int i = 0; i < 100; i++) {
-		DrawLineAA(
+	for (int i = 0; i < 43; i++) {
+		DrawLine(
 			0 + shake->getShakeX(),
 			-scrollY + (i * 32) + shake->getShakeY(),
 			2400 + shake->getShakeX(),
 			-scrollY + (i * 32) + shake->getShakeY(),
 			BLACK);
 	}
+
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 255);
 	DrawCircleAA(-scrollX + 830 + shake->getShakeX(), -scrollY + 480 + shake->getShakeY(), 20, 15, GetColor(0, 0, 255), TRUE, TRUE);
 	DrawCircleAA(-scrollX + 1570 + shake->getShakeX(), -scrollY + 480 + shake->getShakeY(), 20, 15, GetColor(0, 0, 255), TRUE, TRUE);
@@ -112,9 +111,9 @@ void Background::draw(Shake* shake) {
 	DrawCircleAA(-scrollX + 1570 + shake->getShakeX(), -scrollY + 870 + shake->getShakeY(), 20, 15, GetColor(0, 0, 255), TRUE, TRUE);
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 255);
 	SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
-	DrawLineAA(-scrollX+32 + shake->getShakeX(), -scrollY+0+shake->getShakeY(), -scrollX + 2400+ shake->getShakeX(), -scrollY + 0+shake->getShakeY(), GetColor(200, 0, 0), 61);
-	DrawLineAA(-scrollX + 32 + shake->getShakeX(), -scrollY + 1350+ shake->getShakeY(), -scrollX + 2400+ shake->getShakeX(), -scrollY + 1350 + shake->getShakeY(), GetColor(200, 0, 0), 72);
-	DrawLineAA(-scrollX + 2400 + shake->getShakeX(), -scrollY +30+ shake->getShakeY(), -scrollX + 2400 + shake->getShakeX(), -scrollY + 1315 + shake->getShakeY(), GetColor(200, 0, 0), 61);
-	DrawLineAA(-scrollX + 0 + shake->getShakeX(), -scrollY -10+ shake->getShakeY(), -scrollX+0, -scrollY + 1360 + shake->getShakeY(), GetColor(200, 0, 0), 63);
+	DrawLineAA(-scrollX + 32 + shake->getShakeX(), -scrollY + 0 + shake->getShakeY(), -scrollX + 2400 + shake->getShakeX(), -scrollY + 0 + shake->getShakeY(), GetColor(200, 0, 0), 61);
+	DrawLineAA(-scrollX + 32 + shake->getShakeX(), -scrollY + 1350 + shake->getShakeY(), -scrollX + 2400 + shake->getShakeX(), -scrollY + 1350 + shake->getShakeY(), GetColor(200, 0, 0), 72);
+	DrawLineAA(-scrollX + 2400 + shake->getShakeX(), -scrollY + 30 + shake->getShakeY(), -scrollX + 2400 + shake->getShakeX(), -scrollY + 1315 + shake->getShakeY(), GetColor(200, 0, 0), 61);
+	DrawLineAA(-scrollX + 0 + shake->getShakeX(), -scrollY - 10 + shake->getShakeY(), -scrollX + 0, -scrollY + 1360 + shake->getShakeY(), GetColor(200, 0, 0), 63);
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 255);
 }

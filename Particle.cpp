@@ -1,10 +1,14 @@
 #include "Particle.h"
 #include "DxLib.h"
 #include "Player.h"
+#include "Particle.h"
+#include "DxLib.h"
+#include "Player.h"
 #include <cmath>
 #include "Enemy.h"
 #include "RainbowEngine.h"
 #include "Shake.h"
+#include "Color.h"
 
 Particle::Particle() {
 	posX = -100.0f;
@@ -21,19 +25,22 @@ int Particle::getIsActive() { return isActive; }
 
 void Particle::setIsActive(bool isActive) { this->isActive = isActive; }
 
-void Particle::activate(Player *player, Enemy *enemy) {
-	if (enemy->getIsAlive() == 0 && isActive == false) {
-		posX = enemy->getPosX() + enemy->getRadius();
-		posY = enemy->getPosY() + enemy->getRadius();
+void Particle::activate(Player* player, Enemy* enemy) {
+	if (enemy->getActivate() == 1) {
+		if (enemy->getIsAlive() == 0 && isActive == false) {
+			posX = enemy->getPosX() + enemy->getRadius();
+			posY = enemy->getPosY() + enemy->getRadius();
 
-		angle = (float)GetRand(360);
+			angle = GetRand(360);
 
-		speedX = speed * cos(angle);
-		speedY = speed * sin(angle);
+			speedX = speed * cos(angle);
+			speedY = speed * sin(angle);
 
-		radius = GetRand(enemy->getRadius() * 10) + 30;
+			radius = GetRand(enemy->getRadius() * 10) + 30;
 
-		isActive = true;
+			isActive = true;
+		}
+
 	}
 
 	/*if (player->getIsAlive() == 0) {
@@ -51,7 +58,7 @@ void Particle::activate(Player *player, Enemy *enemy) {
 	}*/
 }
 
-void Particle::update(Player *player, Easing *easing) {
+void Particle::update(Player* player, Easing* easing) {
 	static int frame = 0;
 
 	if (isActive == true) {
@@ -61,24 +68,26 @@ void Particle::update(Player *player, Easing *easing) {
 
 		radius *= 0.9f;
 
-		/*if (radius < 0.0f) {
+		if (radius <= 0.1f) {
 			isActive = false;
-		}*/
+		}
 	}
 }
 
-void Particle::draw(RainbowEngine *rainbow_engine, Shake *shake) {
+void Particle::draw(Color* color, Shake* shake) {
 	if (radius >= 0.0f) {
 		SetDrawBlendMode(DX_BLENDMODE_ADD, 40);
 
-		DrawBoxAA(
+		DrawBox(
 			posX - radius + shake->getShakeX(),
 			posY - radius + shake->getShakeY(),
 			posX + radius + shake->getShakeX(),
 			posY + radius + shake->getShakeY(),
-			rainbow_engine->rainbowEngine(10),
+			color->rainbowEngine(10),
 			TRUE);
+		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 40);
 	}
-
-	DrawFormatString(0, 15, GetColor(0, 0, 0), "%lf", posX);
+	SetFontSize(20);
+	DrawFormatString(0, 15, GetColor(0, 0, 0), "%lf", radius);
+	DrawFormatString(0, 30, GetColor(0, 0, 0), "%d", isActive);
 }

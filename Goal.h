@@ -1,19 +1,26 @@
 #pragma once
 #include"GameObject.h"
 #include "Background.h"
-#include "Player.h"
 class Shake;
+class Player;
+class Enemy;
+class Color;
 class Goal :public GameObject {
 	float initX, initY;
-	int isAlive, isClear;
+	int isAlive, isClear, isCollect;
 	int image;
 	int R, B, G;
 	double gauge;
+
+	int efRadius;
+	float priPos;
+	int pal;
 public:
 	Goal();
-	void update(int WIN_WIDTH, int WIN_HEIGHT, Background* backgraund, Player* player);
-	void draw(Shake* shake);
+	void update(int WIN_WIDTH, int WIN_HEIGHT, Background* backgraund, Player* player, Enemy* enemy);
+	void draw(Shake* shake, Color* color);
 	void create(int WIN_WIDTH, int WIN_HEIGHT, Background* backgraund);
+	
 	int getIsClear();
 	float getPosX();
 	float getPosY();
@@ -24,6 +31,6 @@ public:
 	void setPosX(float posX);
 	void setPosY(float posY);
 	void setRadius(float radius);
-	void collide(Player* player);
+	void collide(Player* player, Enemy* enemy);
 };
 

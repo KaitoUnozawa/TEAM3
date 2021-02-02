@@ -1,5 +1,5 @@
 #include "DxLib.h"
-#include "BackGround.h"
+#include "Background.h"
 #include "GameObject.h"
 #include "Player.h"
 #include "Enemy.h"
@@ -10,14 +10,19 @@
 #include "Goal.h"
 #include "Shake.h"
 #include "Opening.h"
+#include "Select.h"
+#include "Option.h"
+#include "SceneTransition.h"
+#include "Color.h"
 
-const char TITLE[] = "クラスでできました～";
+
+const char TITLE[] = "円クローズ";
 
 const float WIN_WIDTH = 800.0f; //ウィンドウ横幅
 const float WIN_HEIGHT = 450.0f;//ウィンドウ縦幅
 
 int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPSTR lpCmdLine, _In_ int nCmdShow) {
-	ChangeWindowMode(1);						//フルスクリーンモードに設定
+	ChangeWindowMode(0);						//フルスクリーンモードに設定
 	//ウィンドウサイズを手動では変更できず、かつウィンドウサイズに合わせて拡大できないようにする
 	SetWindowSizeChangeEnableFlag(FALSE, FALSE);
 	SetMainWindowText(TITLE);					// タイトルを変更
@@ -36,12 +41,11 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 
 
 	//ゲームループで使う変数の宣言
-	XINPUT_STATE input;
 	char keys[256] = { 0 }; //最新のキーボード情報用
 	char oldkeys[256] = { 0 };//1ループ（フレーム）前のキーボード情報
-	int Color = GetColor(0, 0, 0);
 	int Scene = 0;
 	Opening* opening = new Opening();
+	Option* option = new Option();
 	enum Scene {
 		Title,
 		Option,
@@ -68,7 +72,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	const int ENEMY_MAX = 10;
 	Enemy* enemy[ENEMY_MAX];
 	for (int i = 0; i < ENEMY_MAX; i++) {
-		enemy[i] = new Enemy(8, 2, 0,0);
+		enemy[i] = new Enemy(8, 2, 1,0);
 	}
 	enemy[0]->setActivate(1);
 	Easing* easing = new Easing();
@@ -86,6 +90,14 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	Goal* goal = new Goal();
 	Shake* shake = new Shake();
 
+	Select* select[10];
+	for (int i = 0; i < 10; i++) {
+		select[i] = new Select();
+	}
+
+	SceneTransition* scene_transition = new SceneTransition;
+	Color* color = new Color;
+
 	int resetFlag = 0;
 
 	// ゲームループ
@@ -96,9 +108,6 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 		}
 		//最新のキーボード情報を取得
 		GetHitKeyStateAll(keys);
-		// 入力状態を取得
-		GetJoypadXInputState(DX_INPUT_PAD1, &input);
-		SetJoypadDeadZone(DX_INPUT_PAD1, 0.20);
 		//画面クリア
 		ClearDrawScreen();
 		//---------  ここからプログラムを記述  ----------//
@@ -115,8 +124,12 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 			}
 			break;
 		case Option:
+			if (keys[KEY_INPUT_T] == 1){
+				background = new Background();
+				Scene = Title;
+				opening->setIsNextstage(0);
+			}
 			break;
-
 		case End:
 			break;
 
@@ -130,9 +143,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 				enemy[1] = new Enemy(8, 2, 1, 1);
 				Scene = Play;
 			}
-			if (keys[KEY_INPUT_2] == 1 && oldkeys[KEY_INPUT_2] == 0) {
-
-			}
+			
 			break;
 		case Play:
 			if (CheckHitKey(KEY_INPUT_C) == 1) {
@@ -148,21 +159,42 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 		//更新処理
 		switch (Scene) {
 		case Title:
-			player->update(*enemy, background, easing, keys, oldkeys, &input,WIN_WIDTH);
-			background->update(keys, oldkeys, &input, player, easing);
-			enemy[0]->update(*enemy, player, shake, background, keys, oldkeys);
+			shake->shaking();
+			player->update(*enemy, background, easing, keys, oldkeys, WIN_WIDTH,option);
+			background->update(keys, oldkeys, player, easing);
+			enemy[0]->update(*enemy, player, shake, background, keys, oldkeys,option);
 			opening->collide(player);
 			opening->update(keys, oldkeys);
+			for (int i = 0; i < ENEMY_MAX; i++) {
+				for (int j = 0; j < PARTI_MAX; j++) {
+					particle[i][j]->activate(player, enemy[i]);
+				}
+			}
+			for (int i = 0; i < ENEMY_MAX; i++) {
+				for (int j = 0; j < PARTI_MAX; j++) {
+					particle[i][j]->update(player, easing);
+				}
+			}
+			break;
+		case Option:
+			option->update(keys, oldkeys, player);
+			break;
+		case End:
 			break;
 		case StageSelect:
+			scene_transition->decrease(player, easing);
+			for (int i = 0; i < 1; i++) {
+				select[i]->update(scene_transition, easing, color, i);
+			}
+			break;
 		case Play:
-			player->update(*enemy, background, easing, keys, oldkeys, &input, WIN_WIDTH);
-			background->update(keys, oldkeys, &input, player, easing);
+			player->update(*enemy, background, easing, keys, oldkeys, WIN_WIDTH, option);
+			background->update(keys, oldkeys, player, easing);
 			navi->update(WIN_HEIGHT, WIN_WIDTH, player, goal, background);
-			goal->update(WIN_WIDTH, WIN_HEIGHT, background, player);
+			goal->update(WIN_WIDTH, WIN_HEIGHT, background, player, *enemy);
 			shake->shaking();
 			for (int i = 0; i < ENEMY_MAX; i++) {
-				enemy[i]->update(*enemy, player, shake, background, keys, oldkeys);
+				enemy[i]->update(*enemy, player, shake, background, keys, oldkeys, option);
 			}
 			for (int i = 0; i < ENEMY_MAX; i++) {
 				for (int j = 0; j < PARTI_MAX; j++) {
@@ -175,17 +207,18 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 				}
 			}
 			if (goal->getIsClear() == 1) {
-			//if (Stage&one) {
-					background = new Background();
-					player = new Player(8, 4);
-					navi = new Navi();
-					goal = new Goal();
-					enemy[0] = new Enemy(8, 3, 1, 1);
-					enemy[1] = new Enemy(8, 3, 1, 1);
-					enemy[2]->setActivate(1);
-					goal->setIsClear(0);
+				//if (Stage&one) {
+				background = new Background();
+				player = new Player(8, 4);
+				navi = new Navi();
+				goal = new Goal();
+				enemy[0] = new Enemy(8, 3, 1, 1);
+				enemy[1] = new Enemy(8, 3, 1, 1);
+				enemy[2]->setActivate(1);
+				goal->setIsClear(0);
 				//}
 			}
+			break;
 		case result:
 			break;
 		default:
@@ -194,47 +227,61 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 		//描画処理
 		switch (Scene) {
 		case Title:
-			background->draw(shake);
-			enemy[0]->draw(shake);
-			opening->draw();
-			player->draw(*enemy, shake);
+			background->draw(shake, color);
+			enemy[0]->draw(shake, color);
+			opening->draw(shake, color);
+			player->draw(*enemy, shake, color);
 			player->drawEffect();
-			break;
-			break;
-		case StageSelect:
-			DrawFormatString(0, 0, GetColor(0, 0, 0), "1:(1)");
-			DrawFormatString(0, 15, GetColor(0, 0, 0), "2:(2)");
-			DrawFormatString(0, 30, GetColor(0, 0, 0), "3:(3)");
-			DrawFormatString(0, 45, GetColor(0, 0, 0), "4:(4)");
-			DrawFormatString(0, 60, GetColor(0, 0, 0), "5:(5)");
-			DrawFormatString(0, 75, GetColor(0, 0, 0), "6:(6)");
-			DrawFormatString(0, 90, GetColor(0, 0, 0), "7:(7)");
-			DrawFormatString(0, 105, GetColor(0, 0, 0), "8:(8)");
-			DrawFormatString(0, 120, GetColor(0, 0, 0), "9:(9)");
-			//DrawFormatString(0, 135, GetColor(0, 0, 0), "10:(10)");
-			break;
-		case Play:
-			background->draw(shake);
-			navi->draw();
-			goal->draw(shake);
-			DrawFormatString(0, 0, GetColor(0, 0, 0), "%d", enemy[2]->getIsAlive());
-
-			player->draw(*enemy, shake);
-			player->drawEffect();
-			for (int i = 0; i < ENEMY_MAX; i++) {
-				enemy[i]->draw(shake);
-			}
 			for (int i = 0; i < ENEMY_MAX; i++) {
 				for (int j = 0; j < PARTI_MAX; j++) {
-					particle[i][j]->draw(rainbow_engine, shake);
+					particle[i][j]->draw(color, shake);
 				}
 			}
 			break;
+		case Option:
+			option->draw();
+			background->draw(shake, color);
+			break;
+		case End:
+			ChangeFontType(DX_FONTTYPE_ANTIALIASING);
+			SetFontSize(25);
+			DrawString(
+				0,
+				0,
+				"PUSH Esc", GetColor(0, 0, 0));
+			break;
+		case StageSelect:
+			for (int i = 0; i < 10; i++) {
+				select[i]->draw();
+			}
+			scene_transition->draw(color);
+			break;
+
+		case Play:
+			background->draw(shake, color);
+			navi->draw();
+			goal->draw(shake, color);
+			player->draw(*enemy, shake, color);
+			player->drawEffect();
+			for (int i = 0; i < ENEMY_MAX; i++) {
+				enemy[i]->draw(shake, color);
+			}
+
+			for (int i = 0; i < ENEMY_MAX; i++) {
+				for (int j = 0; j < PARTI_MAX; j++) {
+					particle[i][j]->draw(color, shake);
+				}
+			}
+
+			break;
+
 		case result:
 			break;
+
 		default:
 			break;
 		}
+
 		//---------  ここまでにプログラムを記述  ---------//
 		ScreenFlip();//（ダブルバッファ）裏面
 		// 20ミリ秒待機（疑似60FPS）

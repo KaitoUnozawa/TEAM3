@@ -5,7 +5,8 @@
 #include <math.h>
 #include "Background.h"
 #include "Shake.h"
-
+#include"Option.h"
+#include "Color.h"
 
 
 Enemy::Enemy(float radius, float speed, int isAlive, int activate) {
@@ -23,6 +24,8 @@ Enemy::Enemy(float radius, float speed, int isAlive, int activate) {
 	itX = hitPointX.begin();
 	itY = hitPointY.begin();
 	push = 0;
+	BreakEnemy = LoadSoundMem("Resources/BreakEnemy.wav");
+
 }
 
 Enemy::~Enemy() {
@@ -33,6 +36,8 @@ float Enemy::getPosY() { return posY; }
 float Enemy::getRadius() { return radius; }
 float Enemy::getSpeed() { return speed; }
 int Enemy::getIsAlive() { return isAlive; }
+int Enemy::getActivate() { return activate; }
+
 int Enemy::getHitPointSize() { return hitPoint.size(); }
 float Enemy::getHitPointX() { return hpXBuf; }
 float Enemy::getHitPointY() { return hpYBuf; }
@@ -46,8 +51,8 @@ void Enemy::setIsAlive(int isAlive) { this->isAlive = isAlive; }
 void Enemy::setActivate(int  activate){ this->activate = activate; }
 
 //void Enemy::setHitPoint() { hitPoint; }
-void Enemy::setHitPointX(int hitPointX) { this->hpXBuf = hitPointX; }
-void Enemy::setHitPointY(int hitPointY) { this->hpYBuf = hitPointY; }
+void Enemy::setHitPointX(float hitPointX) { this->hpXBuf = hitPointX; }
+void Enemy::setHitPointY(float hitPointY) { this->hpYBuf = hitPointY; }
 
 void Enemy::addHitPoint(int index) {
 	hitPoint.push_back(1);
@@ -95,42 +100,58 @@ void Enemy::ObjectToArray(int index) {
 	hitPointY[index] = hpYBuf;
 }
 
-void Enemy::update(Enemy* enemy, Player* player, Shake* shake, Background* Background, char keys[255], char oldkeys[255]) {
+void Enemy::update(Enemy* enemy, Player* player, Shake* shake, Background* Background, char keys[255], char oldkeys[255], Option* option) {
 	move(player, Background);
-	collide(enemy, player, shake, keys, oldkeys);
+	collide(enemy, player, shake, keys, oldkeys, option);
 	respawn(Background);
 }
-void Enemy::collide(Enemy* enemy, Player* player, Shake* shake, char keys[255], char oldkeys[255]) {
+void Enemy::collide(Enemy* enemy, Player* player, Shake* shake, char keys[255], char oldkeys[255], Option* option) {
 	float a = posX - player->getAttackX();
 	float b = posY - player->getAttackY();
 	float distance = sqrtf(a * a + b * b);
 	float Radius = radius + player->getAttackR();
-	if (player->getIsAlive() == 1 && push == 0) {
-		if (keys[KEY_INPUT_SPACE] == 0 && oldkeys[KEY_INPUT_SPACE] == 1) {
-			push = 1;
-			if (player->getAttackR() < 40) {
-				shake->setIntensify(10);
-			} else if (player->getAttackR() < 70) {
-				shake->setIntensify(20);
-			} else {
-				shake->setIntensify(30);
-			}
-			if (distance < player->getAttackR() - radius) {
-				if (distance <= Radius && isAlive == 1) {
-					isAlive = 0;
-					/*for (int i = 0; i < 50; i++) {
-						if (hitPointX[i] != 0) {
-							enemy->addHitPoint(i);
-							break;
+	float c = posX - player->getPosX();
+	float d = posY - player->getPosY();
+	float dis = sqrtf(c * c + d * d);
+	float Rad = radius + player->getRadius();
+	if (activate == 1) {
+		if (player->getIsAlive() == 1) {
+			if (keys[KEY_INPUT_SPACE] == 0 && oldkeys[KEY_INPUT_SPACE] == 1) {
+				if (player->getAttackR() < 40) {
+					shake->setIntensify(10);
+				} else if (player->getAttackR() < 70) {
+					shake->setIntensify(20);
+				} else {
+					shake->setIntensify(30);
+				}
+				if (distance < player->getAttackR() - radius) {
+					if (distance <= Radius && isAlive == 1) {
+						//“GŽ€‚Ê
+						if (CheckSoundMem(BreakEnemy) == 0) {
+
+							ChangeVolumeSoundMem(255 * option->getVolume() / 100, BreakEnemy);
+							PlaySoundMem(BreakEnemy, DX_PLAYTYPE_BACK);
 						}
-					}*/
-					enemy->addHitPoint(0);
+						isAlive = 0;
+						/*for (int i = 0; i < 50; i++) {
+							if (hitPointX[i] != 0) {
+								enemy->addHitPoint(i);
+								break;
+							}
+						}*/
+						if (hitPoint.size() <= 5) {
+							enemy->addHitPoint(0);
+						}
+
+					}
 				}
 			}
 		}
 	}
-	if (player->getAttackR() <= 0) {
-		push = 0;
+	if (isAlive == 1) {
+		if (dis <= Rad) {
+				isAlive = 0;
+		}
 	}
 }
 void Enemy::move(Player* player, Background* background) {
@@ -156,14 +177,14 @@ void Enemy::move(Player* player, Background* background) {
 		}
 	}
 }
-void Enemy::draw(Shake* shake) {
+void Enemy::draw(Shake* shake, Color* color) {
 	if (isAlive == 1) {
 		DrawBoxAA(
 			posX - radius + shake->getShakeX(),
 			posY - radius + shake->getShakeY(),
 			posX + radius + shake->getShakeX(),
 			posY + radius + shake->getShakeY(),
-			GetColor(230, 92, 92),
+			color->getRED2(),
 			TRUE);
 	}
 }

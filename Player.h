@@ -6,6 +6,8 @@ class Enemy;
 class Background;
 class Shake;
 class Easing;
+class Option;
+class Color;
 
 class Player :public GameObject {
 private:
@@ -19,7 +21,7 @@ private:
 	int isAlive, isAttack, isMove;
 	int hpSize;
 	float frameMax;
-	int padCheack;
+	int ExtendBgm;
 	int hp;
 public:
 	Player(float radius, float speed);
@@ -42,13 +44,13 @@ public:
 	void setSpeed(float speed);
 	void setIsAttack(int isAttack);
 
-	void update(Enemy* enemy, Background* background, Easing* easing, char keys[255], char oldkeys[255],XINPUT_STATE* input, int WIN_WIDTH);
-	void move(char keys[255], char oldkeys[255], XINPUT_STATE* input, int WIN_WIDTH);
+	void update(Enemy* enemy, Background* background, Easing* easing, char keys[255], char oldkeys[255], int WIN_WIDTH, Option* option);
+	void move(char keys[255], char oldkeys[255], int WIN_WIDTH, Option* option);
 	void create();
 	void collide(Enemy* enemy);
 	void enclose(Easing* easing);
 	void hitPointMove(Enemy* enemy, Background* background);
-	void draw(Enemy* enemy, Shake* shake);
+	void draw(Enemy* enemy, Shake* shake, Color* color);
 	void drawEffect();
 
 };

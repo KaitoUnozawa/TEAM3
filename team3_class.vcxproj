@@ -128,6 +128,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Background.cpp" />
+    <ClCompile Include="Color.cpp" />
     <ClCompile Include="Easing.cpp" />
     <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="GameObject.cpp" />
@@ -135,22 +136,28 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Navi.cpp" />
     <ClCompile Include="Opening.cpp" />
+    <ClCompile Include="Option.cpp" />
     <ClCompile Include="Particle.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="RainbowEngine.cpp" />
+    <ClCompile Include="SceneTransition.cpp" />
+    <ClCompile Include="Select.cpp" />
     <ClCompile Include="Shake.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Background.h" />
+    <ClInclude Include="Color.h" />
     <ClInclude Include="Easing.h" />
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="Goal.h" />
     <ClInclude Include="Navi.h" />
     <ClInclude Include="Opening.h" />
+    <ClInclude Include="Option.h" />
     <ClInclude Include="Particle.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="RainbowEngine.h" />
+    <ClInclude Include="SceneTransition.h" />
     <ClInclude Include="Shake.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

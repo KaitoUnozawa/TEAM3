@@ -5,6 +5,8 @@
 
 class Player;
 class Shake;
+class Option;
+class Color;
 
 using namespace std;
 
@@ -28,6 +30,8 @@ private:
 	float hpYBuf;
 	int push;
 	int activate;
+	int BreakEnemy;
+
 public:
 	Enemy(float radius, float speed, int isAlive, int activate);
 	~Enemy();
@@ -40,6 +44,7 @@ public:
 	int getHitPointSize();
 	float getHitPointX();
 	float getHitPointY();
+	int getActivate();
 
 	void setPosX(float posX);
 	void setPosY(float posY);
@@ -48,8 +53,8 @@ public:
 	void setIsAlive(int isAlive);
 	void setActivate(int  activate);
 	//void setHitPoint(int hitPoint);
-	void setHitPointX(int hitPointX);
-	void setHitPointY(int hitPointY);
+	void setHitPointX(float hitPointX);
+	void setHitPointY(float hitPointY);
 
 	void addHitPoint(int index);
 	void subHitPoint(int index);
@@ -57,10 +62,10 @@ public:
 	void arrayToObject(int index);
 	void ObjectToArray(int index);
 
-	void update(Enemy* enemy, Player* player, Shake* shake, Background* background, char keys[255], char oldkeys[255]);
+	void update(Enemy* enemy, Player* player, Shake* shake, Background* background, char keys[255], char oldkeys[255], Option* option);
 	void move(Player* player, Background* background);
-	void collide(Enemy* enemy, Player* player, Shake* shake, char keys[255], char oldkeys[255]);
+	void collide(Enemy* enemy, Player* player, Shake* shake, char keys[255], char oldkeys[255], Option* option);
 	void respawn(Background* background);
 
-	void draw(Shake* shake);
+	void draw(Shake* shake, Color* color);
 };

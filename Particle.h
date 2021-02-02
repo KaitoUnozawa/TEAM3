@@ -5,6 +5,8 @@
 #include "RainbowEngine.h"
 
 class Shake;
+class Color;
+
 
 class Particle {
 private:
@@ -27,7 +29,7 @@ public:
 
 	void setIsActive(bool isActive);
 
-	void activate(Player *player, Enemy *enemy);
-	void update(Player *player, Easing *easing);
-	void draw(RainbowEngine *rainbow_engine, Shake *shake);
+	void activate(Player* player, Enemy* enemy);
+	void update(Player* player, Easing* easing);
+	void draw(Color* color, Shake* shake);
 };

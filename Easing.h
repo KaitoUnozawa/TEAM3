@@ -24,13 +24,17 @@ public:
 	void setEaseNum(float easeNum);
 
 	float easeMove(int priPos, int movPix, int easingType);
-
 	float easeInQuint(float frame, float maxFrame);
 	float easeOutQuint(float frame, float maxFrame);
 	float easeInOutQuint(float frame, float maxFrame);
+
 	float easeInCirc(float frame, float maxFrame);
+
 	float easeInBack(float frame, float maxFrame);
-	float easeInExpo(float frame, float maxFrame);
 	float easeOutBack(float frame, float maxFrame);
+
+	float easeInExpo(float frame, float maxFrame);
+	float easeOutExpo(float frame, float maxFrame);
+
 	float easeOutBounce(float frame, float maxFrame);
 };

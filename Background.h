@@ -4,6 +4,8 @@
 
 class Player;
 class Shake;
+class Color;
+
 
 class Background {
 private:
@@ -16,7 +18,7 @@ private:
 	int alpha;
 	int count;
 	int angle;
-	float posX, posY;
+
 public:
 	Background();
 	float getWorldX();
@@ -24,7 +26,11 @@ public:
 	float getScrollX();
 	float getScrollY();
 	int getMoveFlag();
-	void update(char keys[255], char oldkeys[255], XINPUT_STATE* input, Player* player, Easing* easing);
-	void move(char keys[255], char oldkeys[255], XINPUT_STATE* input, Player* player, Easing* easing);
-	void draw(Shake* shake);
+	void setworldX(int worldX);
+	void setworldY(int worldY);
+	void setscrollX(int scrollX);
+	void setscrollY(int scrollY);
+	void update(char keys[255], char oldkeys[255], Player* player, Easing* easing);
+	void move(char keys[255], char oldkeys[255],  Player* player, Easing* easing);
+	void draw(Shake* shake, Color* color);
 };

@@ -2,6 +2,9 @@
 #include"GameObject.h"
 
 class Player;
+class Shake;
+class Color;
+
 
 class Opening :public GameObject{
 private:
@@ -29,6 +32,6 @@ public:
 
 	void update(char keys[255], char oldkeys[255]);
 	void collide(Player* player);
-	void draw();
+	void draw(Shake* shake, Color* color);
 };
 

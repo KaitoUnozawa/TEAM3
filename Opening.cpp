@@ -1,7 +1,10 @@
 #include "Opening.h"
 #include "Enemy.h"
 #include"DxLib.h"
-#include "Player.h"
+#include"Player.h"
+#include "Shake.h"
+#include "Color.h"
+
 Opening::Opening() {
 	OpeningX = 100;
 	Gray = GetColor(224, 244, 244);
@@ -26,43 +29,94 @@ int Opening::getIsNextstage() { return IsNextstage; }
 
 void Opening::setIsNextstage(int IsNextstage) { this->IsNextstage = IsNextstage; }
 
-void Opening::draw() {
+void Opening::draw(Shake* shake, Color* color) {
 	ChangeFontType(DX_FONTTYPE_ANTIALIASING);
 	SetFontSize(25);
-	DrawString(OpeningX + 125, 130, "-Enclose-", Gray, GetColor(0, 0, 0));
+	DrawString(
+		OpeningX + 125 + shake->getShakeX(),
+		130 + shake->getShakeY(),
+		"-Enclose-", Gray, GetColor(0, 0, 0));
 	SetFontSize(70);
-	DrawString(OpeningX, 50, "円クローズ", Gray);
+	DrawString(
+		OpeningX + shake->getShakeX(),
+		50 + shake->getShakeY(),
+		"円クローズ", Gray);
 	SetFontSize(40);
-	DrawString(OpeningX, 200, "START", Gray);
-	DrawString(OpeningX, 270, "OPTION", Gray);
-	DrawString(OpeningX, 340, "END", Gray);
+	DrawString(
+		OpeningX + shake->getShakeX(),
+		200 + shake->getShakeY(),
+		"START", Gray);
+	DrawString(
+		OpeningX + shake->getShakeX(),
+		270 + shake->getShakeY(),
+		"OPTION", Gray);
+	DrawString(
+		OpeningX + shake->getShakeX(),
+		340 + shake->getShakeY(),
+		"END", Gray);
 	SetFontSize(10);
 	//マルの描画
 	if (Active == 1) {
-		DrawCircle(StartCircleX, StartCircleY, radius, Red);
+		DrawCircle(
+			StartCircleX + shake->getShakeX(),
+			StartCircleY + shake->getShakeY(),
+			radius, color->getRED2());
 	}
 	if (Active == 2) {
-		DrawCircle(OptionCircleX, OptionCircleY, radius, Red);
+		DrawCircle(
+			OptionCircleX + shake->getShakeX(),
+			OptionCircleY + shake->getShakeY(),
+			radius, color->getRED2());
 	}
 	if (Active == 3) {
-		DrawCircle(EndCircleX, EndCircleY, radius, Red);
+		DrawCircle(
+			EndCircleX + shake->getShakeX(),
+			EndCircleY + shake->getShakeY(),
+			radius, color->getRED2());
 	}
-	DrawCircle(StartCircleX, StartCircleY, radius, Yellow);
-	DrawCircle(OptionCircleX, OptionCircleY, radius, Yellow);
-	DrawCircle(EndCircleX, EndCircleY, radius, Yellow);
-	DrawBox(200, 132, 220, 155, Gray, TRUE);
-	DrawBox(355, 132, 375, 155, Gray, TRUE);
+	DrawCircle(
+		StartCircleX + shake->getShakeX(),
+		StartCircleY + shake->getShakeY(),
+		radius, Yellow);
+	DrawCircle(
+		OptionCircleX + shake->getShakeX(),
+		OptionCircleY + shake->getShakeY(),
+		radius, Yellow);
+	DrawCircle(
+		EndCircleX + shake->getShakeX(),
+		EndCircleY + shake->getShakeY(),
+		radius, Yellow);
+	DrawBox(
+		200 + shake->getShakeX(),
+		132 + shake->getShakeY(),
+		220 + shake->getShakeX(),
+		155 + shake->getShakeY(), Gray, TRUE);
+	DrawBox(
+		355 + shake->getShakeX(),
+		132 + shake->getShakeY(),
+		375 + shake->getShakeX(),
+		155 + shake->getShakeY(), Gray, TRUE);
 	if (Active == 1) {
-		DrawCircle(StartCircleX, StartCircleY, radius, Red);
+		DrawCircle(
+			StartCircleX + shake->getShakeX(),
+			StartCircleY + shake->getShakeY(),
+			radius, color->getRED2());
 	}
 	if (Active == 2) {
-		DrawCircle(OptionCircleX, OptionCircleY, radius, Red);
+		DrawCircle(
+			OptionCircleX + shake->getShakeX(),
+			OptionCircleY + shake->getShakeY(),
+			radius, color->getRED2());
 	}
 	if (Active == 3) {
-		DrawCircle(EndCircleX, EndCircleY, radius, Red);
+		DrawCircle(
+			EndCircleX + shake->getShakeX(),
+			EndCircleY + shake->getShakeY(),
+			radius, color->getRED2());
 	}
 	ChangeFontType(DX_FONTTYPE_NORMAL);
 	SetFontSize(15);
+
 }
 void Opening::collide(Player* player) {
 	if ((player->getPosX() - StartCircleX) * (player->getPosX() - StartCircleX) + (player->getPosY() - StartCircleY) * (player->getPosY() - StartCircleY) <= (radius + radius) * (radius + radius)) {

@@ -4,6 +4,8 @@
 #include "Player.h"
 #include "Enemy.h"
 #include "Shake.h"
+#include "Option.h"
+#include "Color.h"
 
 Player::Player(float radius, float speed) {
 	this->posX = 0;
@@ -19,9 +21,8 @@ Player::Player(float radius, float speed) {
 	isAlive = 0;
 	isAttack = 0;
 	hp = 1;
-	isMove = 0;
 	hpSize = 0;
-	padCheack=0;
+	ExtendBgm = LoadSoundMem("Resources/extend.wav");
 }
 
 Player::~Player() {
@@ -44,9 +45,8 @@ void Player::setSpeed(float speed) { this->speed = speed; }
 void Player::setIsAttack(int isAttack) { this->isAttack = isAttack; }
 
 
-void Player::update(Enemy* enemy, Background* background, Easing* easing, char keys[255], char oldkeys[255], XINPUT_STATE* input, int WIN_WIDTH) {
-
-	move(keys, oldkeys, input,WIN_WIDTH);
+void Player::update(Enemy* enemy, Background* background, Easing* easing, char keys[255], char oldkeys[255], int WIN_WIDTH, Option* option) {
+	move(keys, oldkeys, WIN_WIDTH,option);
 	create();
 	enclose(easing);
 	hitPointMove(enemy, background);
@@ -89,8 +89,8 @@ void  Player::create() {
 
 	}
 }
-void Player::move(char keys[255], char oldkeys[255], XINPUT_STATE* input, int WIN_WIDTH) {
-	if (isAlive == 0) {
+void  Player::move(char keys[255], char oldkeys[255], int WIN_WIDTH, Option* option){
+if (isAlive == 0) {
 		if (keys[KEY_INPUT_SPACE] == 1) {
 			readyR++;
 		}
@@ -152,7 +152,6 @@ void Player::collide(Enemy* enemy) {
 	float Radius = radius + enemy->getRadius();
 	if(enemy->getIsAlive()==1){
 		if (distance <= Radius) {
-			enemy->setIsAlive(0);
 			if (enemy->getHitPointSize() == 0) {
 				hp = 0;
 			} else {
@@ -161,9 +160,11 @@ void Player::collide(Enemy* enemy) {
 		}
 	}
 }
-void Player::draw(Enemy* enemy, Shake* shake) {
+void Player::draw(Enemy* enemy, Shake* shake, Color* color) {
+
+
 	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 200);
-	if (isAlive != 2) {
+	if (isAlive == 0 || isAlive == 1) {
 		DrawCircleAA(
 			posX + shake->getShakeX(),
 			posY + shake->getShakeY(),
@@ -179,14 +180,17 @@ void Player::draw(Enemy* enemy, Shake* shake) {
 			64,
 			GetColor(100, 100, 100), 1, 1);
 	}
+
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 100);
+
 	DrawBoxAA(
 		posX - radius + shake->getShakeX(),
 		posY - radius + shake->getShakeY(),
 		posX + radius + shake->getShakeX(),
 		posY + radius + shake->getShakeY(),
-		GetColor(92, 92, 230),
+		color->getBLUE(),
 		TRUE);
+
 	// HP
 	int size = enemy->getHitPointSize();
 	float hitPointX;
