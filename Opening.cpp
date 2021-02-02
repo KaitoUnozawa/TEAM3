@@ -61,8 +61,8 @@ void Opening::draw() {
 	if (Active == 3) {
 		DrawCircle(EndCircleX, EndCircleY, radius, Red);
 	}
-	DrawFormatString(0, 20, Red, "%d", Active, true);
-	DrawFormatString(0, 40, Red, "%d", IsNextstage, true);
+	ChangeFontType(DX_FONTTYPE_NORMAL);
+	SetFontSize(15);
 }
 void Opening::collide(Player* player) {
 	if ((player->getPosX() - StartCircleX) * (player->getPosX() - StartCircleX) + (player->getPosY() - StartCircleY) * (player->getPosY() - StartCircleY) <= (radius + radius) * (radius + radius)) {

@@ -13,6 +13,10 @@ private:
 	int moveFlag;
 	int InputX, InputY;
 	int PadInput;
+	int alpha;
+	int count;
+	int angle;
+	float posX, posY;
 public:
 	Background();
 	float getWorldX();

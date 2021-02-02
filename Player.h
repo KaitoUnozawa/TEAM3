@@ -1,5 +1,6 @@
 #pragma once
 #include"GameObject.h"
+#include "DxLib.h"
 
 class Enemy;
 class Background;
@@ -17,7 +18,9 @@ private:
 	int pal;
 	int isAlive, isAttack, isMove;
 	int hpSize;
-	int frameMax;
+	float frameMax;
+	int padCheack;
+	int hp;
 public:
 	Player(float radius, float speed);
 	~Player();
@@ -31,7 +34,7 @@ public:
 	float getAttackR();
 	int getIsAttack();
 	int getIsAlive();
-	int getIsMove();
+	int getHp();
 
 	void setPosX(float posX);
 	void setPosY(float posY);
@@ -39,9 +42,10 @@ public:
 	void setSpeed(float speed);
 	void setIsAttack(int isAttack);
 
-	void update(Enemy* enemy, Background* background, Easing* easing, char keys[255], char oldkeys[255], int WIN_WIDTH);
-	void move(char keys[255], char oldkeys[255], int WIN_WIDTH);
+	void update(Enemy* enemy, Background* background, Easing* easing, char keys[255], char oldkeys[255],XINPUT_STATE* input, int WIN_WIDTH);
+	void move(char keys[255], char oldkeys[255], XINPUT_STATE* input, int WIN_WIDTH);
 	void create();
+	void collide(Enemy* enemy);
 	void enclose(Easing* easing);
 	void hitPointMove(Enemy* enemy, Background* background);
 	void draw(Enemy* enemy, Shake* shake);

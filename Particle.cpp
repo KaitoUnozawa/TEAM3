@@ -26,7 +26,7 @@ void Particle::activate(Player *player, Enemy *enemy) {
 		posX = enemy->getPosX() + enemy->getRadius();
 		posY = enemy->getPosY() + enemy->getRadius();
 
-		angle = GetRand(360);
+		angle = (float)GetRand(360);
 
 		speedX = speed * cos(angle);
 		speedY = speed * sin(angle);
@@ -71,7 +71,7 @@ void Particle::draw(RainbowEngine *rainbow_engine, Shake *shake) {
 	if (radius >= 0.0f) {
 		SetDrawBlendMode(DX_BLENDMODE_ADD, 40);
 
-		DrawBox(
+		DrawBoxAA(
 			posX - radius + shake->getShakeX(),
 			posY - radius + shake->getShakeY(),
 			posX + radius + shake->getShakeX(),

@@ -27,22 +27,24 @@ void Navi::indicate(float WIN_HEIGHT, float WIN_WIDTH, Player* player, Goal* goa
 	//position
 	float player2goalX = goal->getInitX() - (player->getPosX() + background->getScrollX());
 	float player2goalY = goal->getInitY() - (player->getPosY() + background->getScrollY());
-	float perX = fabs(player->getPosX() / player2goalX);
-	float per = fabs(player->getPosY() / player2goalY);
+	float per4top = fabs(player->getPosY() / player2goalY);
+	float per4bottom = fabs((WIN_HEIGHT - player->getPosY()) / player2goalY);
+	float per4left = fabs(player->getPosX() / player2goalX);
+	float per4right = fabs((WIN_WIDTH - player->getPosX()) / player2goalX);
 	//goal->getInitX()- (player->getPosX() + background->getScrollX()) * (abs((WIN_HEIGHT - player->getPosY())/ player2goalY) )
 	if (
 		//ã
 		goal->getPosY() < (WIN_HEIGHT / WIN_WIDTH) * goal->getPosX()
 		&& goal->getPosY() < -(WIN_HEIGHT / WIN_WIDTH) * goal->getPosX() + WIN_HEIGHT
 		) {
-		this->posX = player->getPosX() + player2goalX * per;
+		this->posX = player->getPosX() + player2goalX * per4top;
 		this->posY = 30;
 	} else if (
 		//‰º
 		goal->getPosY() > (WIN_HEIGHT / WIN_WIDTH) * goal->getPosX()
 		&& goal->getPosY() > -(WIN_HEIGHT / WIN_WIDTH) * goal->getPosX() + WIN_HEIGHT
 		) {
-		this->posX = goal->getPosX() + player2goalX * per;
+		this->posX = goal->getPosX() - player2goalX * per4bottom;
 		this->posY = 420;
 	} else if (
 		//¶
@@ -50,15 +52,15 @@ void Navi::indicate(float WIN_HEIGHT, float WIN_WIDTH, Player* player, Goal* goa
 		&& goal->getPosY() < -(WIN_HEIGHT / WIN_WIDTH) * goal->getPosX() + WIN_HEIGHT
 		) {
 		this->posX = 30;
-		this->posY = player->getPosY() + player2goalY * perX;
+		this->posY = player->getPosY() + player2goalY * per4left;
 	} else if (
 		//‰E
 		goal->getPosY() < (WIN_HEIGHT / WIN_WIDTH) * goal->getPosX()
 		&& goal->getPosY() > -(WIN_HEIGHT / WIN_WIDTH) * goal->getPosX() + WIN_HEIGHT
 		) {
 		this->posX = 770;
-		this->posY = player->getPosY() + player2goalY * perX;
-	}
+		this->posY = player->getPosY() + player2goalY * per4right;
+			}
 	if (posX > 770) {
 		this->posX = 770;
 	}
@@ -75,9 +77,9 @@ void Navi::indicate(float WIN_HEIGHT, float WIN_WIDTH, Player* player, Goal* goa
 	// angle
 	toGoalX = (posX - goal->getPosX());
 	toGoalY = (posY - goal->getPosY());
-	toGoalR = (double)sqrt(pow(toGoalX, 2) + pow(toGoalY, 2));
-	radianX = (double)cos(angle);
-	radianY = (double)sin(angle);
+	toGoalR = sqrt(pow(toGoalX, 2) + pow(toGoalY, 2));
+	radianX = cos(angle);
+	radianY = sin(angle);
 	if (toGoalX * radianX + toGoalY * radianY < 0) {
 		angle = angle + (PI / 90);
 	} else if (toGoalX * radianX + toGoalY * radianY < 45) {
@@ -98,10 +100,7 @@ void  Navi::visible(float WIN_HEIGHT, float WIN_WIDTH, Goal* goal) {
 		isVisible = 1;
 	}
 }
-
 void  Navi::draw() {
-	DrawLine(0, 0, 800, 450, GetColor(255, 0, 0), TRUE);
-	DrawLine(0, 450, 800, 0, GetColor(0, 0, 255), TRUE);
 	if (isVisible == 1) {
 		DrawRotaGraph((int)posX, (int)posY, 0.25f, angle, GrHandle, TRUE, TRUE);
 	}

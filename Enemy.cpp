@@ -8,7 +8,7 @@
 
 
 
-Enemy::Enemy(float radius, float speed, int isAlive) {
+Enemy::Enemy(float radius, float speed, int isAlive, int activate) {
 	initX = (float)GetRand(800);
 	initY = (float)GetRand(450);
 	posX = (float)GetRand(800);
@@ -16,6 +16,7 @@ Enemy::Enemy(float radius, float speed, int isAlive) {
 	this->radius = radius;
 	this->speed = speed;
 	this->isAlive = isAlive;
+	this->activate = activate;
 	isFollow = 0;
 	isRespawn = GetRand(4);
 	count = 0;
@@ -42,6 +43,8 @@ void Enemy::setPosY(float posY) { this->posY = posY; }
 void Enemy::setRadius(float radius) { this->radius = radius; }
 void Enemy::setSpeed(float speed) { this->speed = speed; }
 void Enemy::setIsAlive(int isAlive) { this->isAlive = isAlive; }
+void Enemy::setActivate(int  activate){ this->activate = activate; }
+
 //void Enemy::setHitPoint() { hitPoint; }
 void Enemy::setHitPointX(int hitPointX) { this->hpXBuf = hitPointX; }
 void Enemy::setHitPointY(int hitPointY) { this->hpYBuf = hitPointY; }
@@ -130,13 +133,27 @@ void Enemy::collide(Enemy* enemy, Player* player, Shake* shake, char keys[255], 
 		push = 0;
 	}
 }
-void Enemy::move(Player* player, Background* Background) {
+void Enemy::move(Player* player, Background* background) {
 	if (isAlive == 1) {
-		float aX2bX = (player->getPosX() - posX);
-		float aY2bY = (player->getPosY() - posY);
-		float aR2bR = (float)sqrt((aX2bX * aX2bX) + (aY2bY * aY2bY));
-		posX += (aX2bX / aR2bR * speed);
-		posY += (aY2bY / aR2bR * speed);
+		float toPlayerX = (player->getPosX() - background->getScrollX() - (posX - background->getScrollX()));
+		float toPlayerY = (player->getPosY() - background->getScrollY() - (posY - background->getScrollY()));
+		float toPlayerR = (float)sqrt(pow(toPlayerX, 2) + pow(toPlayerY, 2));
+		if (background->getMoveFlag() == 0) {
+			posX += (toPlayerX / toPlayerR * speed);
+			posY += (toPlayerY / toPlayerR * speed);
+		} else if (background->getMoveFlag()==1){
+			posX += (toPlayerX / toPlayerR * speed);
+			posY = posY ;
+		} else if (background->getMoveFlag() == 2) {
+			posX += (toPlayerX / toPlayerR * speed);
+			posY = posY;
+		} else if (background->getMoveFlag() == 3) {
+			posX =posX;
+			posY += (toPlayerY / toPlayerR * speed);
+		} else {
+			posX = posX;
+			posY += (toPlayerY / toPlayerR * speed);
+		}
 	}
 }
 void Enemy::draw(Shake* shake) {
@@ -152,24 +169,26 @@ void Enemy::draw(Shake* shake) {
 }
 
 void Enemy::respawn(Background* Background) {
-	if (isAlive == 0) {
-		count++;
-		if (count == 30) {
-			if (isRespawn == 0) {
-				posX = -Background->getScrollX() + 830;
-				posY = -Background->getScrollY() + 480;
-			} else if (isRespawn == 1) {
-				posX = -Background->getScrollX() + 1570;
-				posY = -Background->getScrollY() + 480;
-			} else if (isRespawn == 2) {
-				posX = -Background->getScrollX() + 830;
-				posY = -Background->getScrollY() + 870;
-			} else {
-				posX = -Background->getScrollX() + 1570;
-				posY = -Background->getScrollY() + 870;
+	if (activate==1) {
+		if (isAlive == 0) {
+			count++;
+			if (count == 30) {
+				if (isRespawn == 0) {
+					posX = -Background->getScrollX() + 830;
+					posY = -Background->getScrollY() + 480;
+				} else if (isRespawn == 1) {
+					posX = -Background->getScrollX() + 1570;
+					posY = -Background->getScrollY() + 480;
+				} else if (isRespawn == 2) {
+					posX = -Background->getScrollX() + 830;
+					posY = -Background->getScrollY() + 870;
+				} else {
+					posX = -Background->getScrollX() + 1570;
+					posY = -Background->getScrollY() + 870;
+				}
+				isAlive = 1;
+				count = 0;
 			}
-			isAlive = 1;
-			count = 0;
 		}
 	}
 }

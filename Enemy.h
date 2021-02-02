@@ -27,8 +27,9 @@ private:
 	float hpXBuf;
 	float hpYBuf;
 	int push;
+	int activate;
 public:
-	Enemy(float radius, float speed, int isAlive);
+	Enemy(float radius, float speed, int isAlive, int activate);
 	~Enemy();
 
 	float getPosX();
@@ -45,7 +46,8 @@ public:
 	void setRadius(float radius);
 	void setSpeed(float speed);
 	void setIsAlive(int isAlive);
-	void setHitPoint(int hitPoint);
+	void setActivate(int  activate);
+	//void setHitPoint(int hitPoint);
 	void setHitPointX(int hitPointX);
 	void setHitPointY(int hitPointY);
 

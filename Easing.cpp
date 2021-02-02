@@ -2,6 +2,7 @@
 #include <cmath>
 
 Easing::Easing() {
+	priPos = 0;
 	start = 0;
 	end = 50;
 	movPix = 100;

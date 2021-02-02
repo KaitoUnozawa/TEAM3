@@ -11,7 +11,6 @@
 #include "Shake.h"
 #include "Opening.h"
 
-
 const char TITLE[] = "クラスでできました～";
 
 const float WIN_WIDTH = 800.0f; //ウィンドウ横幅
@@ -69,8 +68,9 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	const int ENEMY_MAX = 10;
 	Enemy* enemy[ENEMY_MAX];
 	for (int i = 0; i < ENEMY_MAX; i++) {
-		enemy[i] = new Enemy(8, 2, 1);
+		enemy[i] = new Enemy(8, 2, 0,0);
 	}
+	enemy[0]->setActivate(1);
 	Easing* easing = new Easing();
 
 	const int PARTI_MAX = 70;
@@ -103,7 +103,6 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 		ClearDrawScreen();
 		//---------  ここからプログラムを記述  ----------//
 		switch (Scene) {
-
 		case Title:
 			if (opening->getIsNextstage() == 1) {
 				Scene = StageSelect;
@@ -123,103 +122,23 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 
 		case StageSelect:
 			if (keys[KEY_INPUT_1] == 1 && oldkeys[KEY_INPUT_1] == 0) {
-				for (int i = 0; i < ENEMY_MAX; i++) {
-					delete enemy[i];
-				}
-				enemy[0] = new Enemy(8, 4, 1);
-				enemy[1] = new Enemy(8, 4, 1);
-				Stage = one;
-				Scene = 2;
+				background = new Background();
+				player = new Player(8, 4);
+				navi = new Navi();
+				goal = new Goal();
+				enemy[0] = new Enemy(8, 2, 1, 1);
+				enemy[1] = new Enemy(8, 2, 1, 1);
+				Scene = Play;
 			}
 			if (keys[KEY_INPUT_2] == 1 && oldkeys[KEY_INPUT_2] == 0) {
-				for (int i = 0; i < ENEMY_MAX; i++) {
-					delete enemy[i];
-				}
-				enemy[0] = new Enemy(8, 4, 1);
-				enemy[1] = new Enemy(8, 4, 1);
-				enemy[2] = new Enemy(8, 4, 1);
-				Stage = two;
-				Scene = 2;
-			}
-			if (keys[KEY_INPUT_3] == 1 && oldkeys[KEY_INPUT_3] == 0) {
-				for (int i = 0; i < ENEMY_MAX; i++) {
-					delete enemy[i];
-				}
-				enemy[0] = new Enemy(8, 2, 0);
-				enemy[1] = new Enemy(8, 2, 0);
-				enemy[2] = new Enemy(8, 2, 0);
-				enemy[3] = new Enemy(8, 2, 0);
-				Stage = three;
-				Scene = 2;
-			}
-			if (keys[KEY_INPUT_4] == 1 && oldkeys[KEY_INPUT_4] == 0) {
-				for (int i = 0; i < ENEMY_MAX; i++) {
-					delete enemy[i];
-				}
-				enemy[0] = new Enemy(16, 3, 1);
-				enemy[1] = new Enemy(8, 4, 1);
-				Stage = four;
-				Scene = 2;
-			}
-			if (keys[KEY_INPUT_5] == 1 && oldkeys[KEY_INPUT_5] == 0) {
-				for (int i = 0; i < ENEMY_MAX; i++) {
-					delete enemy[i];
-				}
-				enemy[0] = new Enemy(8, 4, 1);
-				enemy[1] = new Enemy(16, 3, 1);
-				enemy[2] = new Enemy(16, 3, 1);
-				enemy[3] = new Enemy(16, 3, 1);
-				Stage = five;
-				Scene = 2;
-			}
-			if (keys[KEY_INPUT_6] == 1 && oldkeys[KEY_INPUT_6] == 0) {
-				for (int i = 0; i < ENEMY_MAX; i++) {
-					delete enemy[i];
-				}
-				enemy[0] = new Enemy(8, 4, 1);
-				enemy[1] = new Enemy(8, 4, 1);
-				enemy[2] = new Enemy(8, 4, 1);
-				enemy[3] = new Enemy(16, 3, 1);
-				enemy[4] = new Enemy(16, 3, 1);
-				enemy[5] = new Enemy(16, 3, 1);
-				Stage = six;
-				Scene = 2;
-			}if (keys[KEY_INPUT_7] == 1 && oldkeys[KEY_INPUT_7] == 0) {
-				for (int i = 0; i < ENEMY_MAX; i++) {
-					delete enemy[i];
-				}
-				enemy[0] = new Enemy(8, 4, 1);
-				enemy[1] = new Enemy(16, 3, 1);
-				enemy[2] = new Enemy(24, 2, 1);
-				Stage = seven;
-				Scene = 2;
-			}if (keys[KEY_INPUT_8] == 1 && oldkeys[KEY_INPUT_8] == 0) {
-				for (int i = 0; i < ENEMY_MAX; i++) {
-					delete enemy[i];
-				}
-				enemy[0] = new Enemy(8, 4, 1);
-				enemy[1] = new Enemy(8, 4, 1);
-				enemy[2] = new Enemy(16, 3, 1);
-				enemy[3] = new Enemy(24, 2, 1);
-				enemy[4] = new Enemy(24, 2, 1);
-				Stage = eight;
-				Scene = 2;
-			}if (keys[KEY_INPUT_9] == 1 && oldkeys[KEY_INPUT_9] == 0) {
-				for (int i = 0; i < ENEMY_MAX; i++) {
-					delete enemy[i];
-				}
-				enemy[0] = new Enemy(8, 3, 1);
-				enemy[1] = new Enemy(8, 3, 1);
-				enemy[2] = new Enemy(16, 2, 1);
-				enemy[3] = new Enemy(16, 2, 1);
-				enemy[4] = new Enemy(24, 1, 1);
-				enemy[5] = new Enemy(24, 1, 1);
-				enemy[6] = new Enemy(24, 1, 1);
-				Stage = nine;
-				Scene = 2;
+
 			}
 			break;
 		case Play:
+			if (CheckHitKey(KEY_INPUT_C) == 1) {
+				Scene = StageSelect;
+			}
+
 			break;
 		case result:
 			break;
@@ -229,72 +148,44 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 		//更新処理
 		switch (Scene) {
 		case Title:
-			player->update(*enemy, background, easing, keys, oldkeys, WIN_WIDTH);
+			player->update(*enemy, background, easing, keys, oldkeys, &input,WIN_WIDTH);
 			background->update(keys, oldkeys, &input, player, easing);
 			enemy[0]->update(*enemy, player, shake, background, keys, oldkeys);
 			opening->collide(player);
 			opening->update(keys, oldkeys);
 			break;
 		case StageSelect:
-			break;
 		case Play:
-			switch (Stage) {
-			case one:
-				player->update(*enemy, background, easing, keys, oldkeys, WIN_WIDTH);
-				background->update(keys, oldkeys, &input, player, easing);
-				navi->update(WIN_HEIGHT, WIN_WIDTH, player, goal, background);
-				goal->update(WIN_WIDTH, WIN_HEIGHT, background, player);
-				shake->shaking();
-				for (int i = 0; i < 2; i++) {
-					enemy[i]->update(*enemy, player, shake, background, keys, oldkeys);
-				}
-				break;
-			case two:
-				player->update(*enemy, background, easing, keys, oldkeys, WIN_WIDTH);
-				background->update(keys, oldkeys, &input, player, easing);
-				navi->update(WIN_HEIGHT, WIN_WIDTH, player, goal, background);
-				goal->update(WIN_WIDTH, WIN_HEIGHT, background, player);
-				shake->shaking();
-				break;
-			case three:
-
-				break;
-			case four:
-
-				break;
-			case five:
-
-				break;
-			case six:
-
-				break;
-			case seven:
-
-				break;
-			case eight:
-
-				break;
-			case nine:
-				break;
-			default:
-				Stage = one;
-				break;
+			player->update(*enemy, background, easing, keys, oldkeys, &input, WIN_WIDTH);
+			background->update(keys, oldkeys, &input, player, easing);
+			navi->update(WIN_HEIGHT, WIN_WIDTH, player, goal, background);
+			goal->update(WIN_WIDTH, WIN_HEIGHT, background, player);
+			shake->shaking();
+			for (int i = 0; i < ENEMY_MAX; i++) {
+				enemy[i]->update(*enemy, player, shake, background, keys, oldkeys);
 			}
-			if (resetFlag == 1) {
-				delete player;
-				delete background;
-				delete navi;
-				delete goal;
-				for (int i = 0; i < ENEMY_MAX; i++) {
-					delete enemy[i];
+			for (int i = 0; i < ENEMY_MAX; i++) {
+				for (int j = 0; j < PARTI_MAX; j++) {
+					particle[i][j]->activate(player, *enemy);
 				}
-				background = new Background();
-				player = new Player(8, 4);
-				navi = new Navi();
-				goal = new Goal();
-				resetFlag = 0;
 			}
-			break;
+			for (int i = 0; i < ENEMY_MAX; i++) {
+				for (int j = 0; j < PARTI_MAX; j++) {
+					particle[i][j]->update(player, easing);
+				}
+			}
+			if (goal->getIsClear() == 1) {
+			//if (Stage&one) {
+					background = new Background();
+					player = new Player(8, 4);
+					navi = new Navi();
+					goal = new Goal();
+					enemy[0] = new Enemy(8, 3, 1, 1);
+					enemy[1] = new Enemy(8, 3, 1, 1);
+					enemy[2]->setActivate(1);
+					goal->setIsClear(0);
+				//}
+			}
 		case result:
 			break;
 		default:
@@ -326,38 +217,18 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 			background->draw(shake);
 			navi->draw();
 			goal->draw(shake);
+			DrawFormatString(0, 0, GetColor(0, 0, 0), "%d", enemy[2]->getIsAlive());
+
 			player->draw(*enemy, shake);
 			player->drawEffect();
 			for (int i = 0; i < ENEMY_MAX; i++) {
 				enemy[i]->draw(shake);
 			}
-			DrawFormatString(0, 0, Color, "LeftTrigger:%d RightTrigger:%d",
-				input.LeftTrigger, input.RightTrigger);
-			DrawFormatString(0, 16, Color, "ThumbLX:%d ThumbLY:%d",
-				input.ThumbLX, input.ThumbLY);
-			DrawFormatString(0, 32, Color, "ThumbRX:%d ThumbRY:%d",
-				input.ThumbRX, input.ThumbRY);
 			for (int i = 0; i < ENEMY_MAX; i++) {
 				for (int j = 0; j < PARTI_MAX; j++) {
 					particle[i][j]->draw(rainbow_engine, shake);
 				}
 			}
-			//DrawFormatString(0,0, GetColor(0,0,0), "GoalX: %f", goal->getInitX());
-			//DrawFormatString(0,20, GetColor(0,0,0), "GoalY: %f", goal->getInitY());
-			//DrawFormatString(0,40, GetColor(0,0,0), "PlayerX: %f", player->getPosX() + background->getScrollX());
-			//DrawFormatString(0,60, GetColor(0,0,0), "PlayerY: %f", player->getPosY() + background->getScrollY());
-			//// float per = abs((WIN_HEIGHT - player->getPosY())/ player2goalY);
-			//DrawFormatString(0,80, GetColor(0,0,0), "player2goalX: %f", goal->getInitX()- (player->getPosX() + background->getScrollX()));
-			//DrawFormatString(0,100, GetColor(0,0,0), "player2goalY: %f",goal->getInitY()- (player->getPosY() + background->getScrollY()));
-			//DrawFormatString(0,120, GetColor(0,0,0), "length: %f",  player->getPosY());
-			//DrawFormatString(0,140, GetColor(0,0,0), "per: %f", abs((WIN_HEIGHT - player->getPosY())/ (goal->getInitY()- (player->getPosY() + background->getScrollY()))));
-			DrawFormatString(0, 0, Color, "LeftTrigger:%d RightTrigger:%d",
-				input.LeftTrigger, input.RightTrigger);
-			DrawFormatString(0, 16, Color, "ThumbLX:%d ThumbLY:%d",
-				input.ThumbLX, input.ThumbLY);
-			DrawFormatString(0, 32, Color, "ThumbRX:%d ThumbRY:%d",
-				input.ThumbRX, input.ThumbRY);
-
 			break;
 		case result:
 			break;

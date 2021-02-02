@@ -14,8 +14,8 @@ void Goal::setPosX(float posX) { this->posX = posX; }
 void Goal::setPosY(float posY) { this->posY = posY; }
 void Goal::setRadius(float radius) { this->radius = radius; }
 Goal::Goal() {
-	initX = 1400;//(float)GetRand(2384);
-	initY = 600;//(float)GetRand(1334);
+	initX = (float)GetRand(2384);
+	initY = (float)GetRand(1334);
 	posX = 0;
 	posY = 0;
 	radius = 16;
@@ -52,8 +52,8 @@ void Goal::collide(Player* player) {
 	}
 }
 void Goal::draw(Shake* shake) {
-	DrawCircleGauge(posX + shake->getShakeX(), posY + shake->getShakeY(), 100, image, 0);
+	DrawCircleGauge((int)posX + shake->getShakeX(),(int) posY + shake->getShakeY(), 100, image, 0);
 	SetDrawBright(R, G, B);
-	DrawCircleGauge(posX + shake->getShakeX(), posY + shake->getShakeY(), gauge, image, 0);
+	DrawCircleGauge((int)posX + shake->getShakeX(), (int)posY + shake->getShakeY(), gauge, image, 0);
 	SetDrawBright(255, 255, 255);
 }
